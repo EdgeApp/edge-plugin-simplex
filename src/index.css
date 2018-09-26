@@ -54,3 +54,7 @@ body,
 .body > div:nth-child(odd) {
   background-color: #eee;
 }
+
+.address {
+  word-wrap: "break-word"
+}

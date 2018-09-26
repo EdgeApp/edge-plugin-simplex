@@ -486,8 +486,8 @@ class BuyScene extends React.Component {
               You will see a confirmation screen before you buy.
             </Typography>
             {quote && quote.address && (
-              <Typography component="p" className={classes.p}>
-                Payment will be sent to <strong style={{wordWrap: 'break-word'}}>{quote.address}</strong>.
+              <Typography component="p">
+                Payment will be sent to <strong className={classes.address}>{quote.address}</strong>.
               </Typography>
             )}
             <EdgeButton
