@@ -488,7 +488,7 @@ class BuyScene extends React.Component {
             {quote && quote.address && (
               <p style={{textAlign: "center", maxWidth: "100%", wordWrap: "break-word", overflowWrap: "break-word", flexWrap: "wrap"}} component="p">
                 Payment will be sent to<br />
-                <strong style={{maxWidth: "100%", wordWrap: "break-word", overflowWrap: "break-word", flexWrap: "wrap"}} className={classes.address}>{quote.address}</strong>.
+                <strong style={{maxWidth: "100%", wordWrap: "break-word", overflowWrap: "break-word", flexWrap: "wrap"}} className={classes.address}>{quote.address}</strong>
               </p>
             )}
             <EdgeButton
