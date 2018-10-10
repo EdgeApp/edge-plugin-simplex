@@ -36,7 +36,10 @@ const eventStyles = (theme) => ({
     flexDirection: 'column'
   }
 })
-
+const testData = []
+for (let i = 0; i < 100; i++) {
+  testData.push('howdy')
+}
 class PaymentsScene extends React.Component {
   constructor (props) {
     super(props)
@@ -66,11 +69,8 @@ class PaymentsScene extends React.Component {
       })
   }
 
-  _renderPayment = (payment) => {
-    return (<PaymentRow
-      history={this.props.history}
-      payment={payment}
-      key={payment.payment_id} />)
+  _renderPayment = () => {
+    return (<span>Helloasdfsd</span>)
   }
 
   _renderPayments = () => {
@@ -84,8 +84,8 @@ class PaymentsScene extends React.Component {
           </Grid>
         </Grid>
         <Grid item xs={12} className="body">
-          {this.state.payments.map(payment => {
-            return this._renderPayment(payment)
+          {testData.map(() => {
+            return <div>Test</div>
           })}
         </Grid>
       </Grid>
@@ -106,7 +106,7 @@ class PaymentsScene extends React.Component {
   }
 
   render () {
-    const body = this.state.payments.length > 0
+    const body = testData.length > 0
       ? this._renderPayments()
       : this._renderEmpty()
     return (

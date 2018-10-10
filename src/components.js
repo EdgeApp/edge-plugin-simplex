@@ -228,32 +228,19 @@ WalletDrawer.propTypes = {
   wallets: PropTypes.array
 }
 
-export const PaymentRow = (props) => {
-  const payment = props.payment
-  const status = formatStatus(payment.status)
-  const fiatAmount = formatRate(
-    payment.fiat_total_amount,
-    payment.fiat_currency)
-  const cryptoAmount = formatRate(
-    payment.requested_digital_amount,
-    payment.requested_digital_currency)
-  const date = moment(payment.created_at)
-  const onClick = () => {
-    if (props.history) {
-      props.history.push(`/events/${payment.payment_id}/`)
-    }
-  }
+export const PaymentRow = () => {
+
   return (
-    <Grid container key={payment.payment_id} onClick={onClick}>
+    <Grid>
       <Grid item xs={6} scope="row">
-        <Typography variant="body1">{date.format('LL')}</Typography>
-        <Typography variant="caption">{date.format('LT')}</Typography>
+        <Typography variant="body1">asdfasdf</Typography>
+        <Typography variant="caption">asdfasdf</Typography>
       </Grid>
       <Grid item xs={3}>
-        <Typography variant="caption">{fiatAmount} {payment.fiat_currency}</Typography>
-        <Typography variant="caption">{cryptoAmount} {payment.requested_digital_currency}</Typography>
+        <Typography variant="caption">asdfasdf</Typography>
+        <Typography variant="caption">asdfasd</Typography>
       </Grid>
-      <Grid item xs={3}>{status}</Grid>
+      <Grid item xs={3}>asdfasdfsd</Grid>
     </Grid>
   )
 }
