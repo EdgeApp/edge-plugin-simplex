@@ -83,7 +83,7 @@ class PaymentsScene extends React.Component {
             <Grid item xs={3}><Typography>Status</Typography></Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} className="body" style={{overflowY: 'scroll'}}>
+        <Grid item xs={12} className="body">
           {this.state.payments.map(payment => {
             return this._renderPayment(payment)
           })}
@@ -113,7 +113,7 @@ class PaymentsScene extends React.Component {
       <div className={this.props.classes.paymentScene}>
         <div className="flex-fill d-flex">
           <Card className={this.props.classes.card}>
-            <CardContent className="d-flex flex-fill">
+            <CardContent className="d-flex flex-fill" style={{overflowY: 'scroll'}}>
               { body }
             </CardContent>
           </Card>
