@@ -83,7 +83,7 @@ class PaymentsScene extends React.Component {
             <Grid item xs={3}><Typography>Status</Typography></Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} className="body">
+        <Grid item xs={12} className="body" style={{overflowY: 'scroll'}}>
           {this.state.payments.map(payment => {
             return this._renderPayment(payment)
           })}
@@ -96,7 +96,7 @@ class PaymentsScene extends React.Component {
     return (
       <div className="d-flex flex-fill empty">
         {this.state.loaded && (
-          <div>No transactions yet!</div>
+          <div>No transactionskylan yet!</div>
         )}
         {!this.state.loaded && (
           <CircularProgress size={25} />
