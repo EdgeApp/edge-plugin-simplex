@@ -113,7 +113,7 @@ class PaymentsScene extends React.Component {
       <div className={this.props.classes.paymentScene}>
         <div className="flex-fill d-flex">
           <Card className={this.props.classes.card}>
-            <CardContent className="d-flex flex-fill">
+            <CardContent className="d-flex flex-fill" style={{overflowY: 'scroll'}}>
               { body }
             </CardContent>
           </Card>
