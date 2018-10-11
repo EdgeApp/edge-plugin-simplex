@@ -101,7 +101,7 @@ const powerThemes = (theme) => ({
 export const PoweredBy = withStyles(powerThemes)((props) => {
   return (
     <Typography component="p" className={props.classes.p}>
-      Powered by Simplex Test
+      Powered by Simplex
     </Typography>
   )
 })
