@@ -113,7 +113,7 @@ PoweredBy.propTypes = {
 const confirmStyles = (theme) => ({
   title: {
     textAlign: 'center',
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
     fontSize: '18pt'
   },
   p: {
