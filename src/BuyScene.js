@@ -508,6 +508,7 @@ class BuyScene extends React.Component {
 
         <Support />
         <PoweredBy />
+        <span>{JSON.stringify(this.state)}</span>
         <WalletDrawer
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
