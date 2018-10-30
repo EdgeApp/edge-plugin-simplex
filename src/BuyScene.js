@@ -131,7 +131,8 @@ class BuyScene extends React.Component {
       quote: null,
       fiatSupport: true,
       fiat: 'USD',
-      defaultFiat: 'USD'
+      defaultFiat: 'USD',
+      debug: ''
     }
   }
 
@@ -147,6 +148,7 @@ class BuyScene extends React.Component {
     core.wallets()
       .then((data) => {
         this.setState({
+          debug: JSON.stringify(data),
           wallets: data.filter((wallet) =>
             API.SUPPORTED_DIGITAL_CURRENCIES.indexOf(wallet.currencyCode) >= 0)
         }, () => {
@@ -168,8 +170,6 @@ class BuyScene extends React.Component {
             // Probably exit...not available wallets
           }
         })
-        ui.showAlert(false, 'Error', data)
-
       })
       .catch(() => {
         ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
@@ -510,6 +510,7 @@ class BuyScene extends React.Component {
 
         <Support />
         <PoweredBy />
+        <span>{this.state.debug}</span>
         <span>{JSON.stringify(this.state)}</span>
         <WalletDrawer
           open={this.state.drawerOpen}
