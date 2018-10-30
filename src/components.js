@@ -213,7 +213,7 @@ export class WalletDrawer extends React.Component {
           <EdgeButton color="primary" onClick={this.props.onHeaderClick}>
             Choose Destination Wallet
           </EdgeButton>
-          {this.renderWallets()}
+          {JSON.stringify(this.props.wallets)}
         </div>
       </Drawer>
     )
