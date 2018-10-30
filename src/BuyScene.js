@@ -133,7 +133,7 @@ class BuyScene extends React.Component {
       fiat: 'USD',
       defaultFiat: 'USD',
       debug: '',
-      debug2: 'start'
+      debug3: 'start'
     }
   }
 
@@ -150,7 +150,7 @@ class BuyScene extends React.Component {
       .then((data) => {
         this.setState({
           debug: JSON.stringify(data),
-          debug2: 'howdy',
+          debug3: 'howdy',
           wallets: data.filter((wallet) =>
             API.SUPPORTED_DIGITAL_CURRENCIES.indexOf(wallet.currencyCode) >= 0)
         }, () => {
@@ -513,7 +513,7 @@ class BuyScene extends React.Component {
         <Support />
         <PoweredBy />
         <span>debug: {this.state.debug}</span>
-        <span>debug2: {this.state.debug2}</span>        
+        <span>debug3: {this.state.debug3}</span>        
         <WalletDrawer
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
