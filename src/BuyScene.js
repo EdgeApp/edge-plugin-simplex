@@ -146,9 +146,13 @@ class BuyScene extends React.Component {
     this.loadWallets()
   }
 
+  doAlert = () => {
+    window.alert('post message', 'wallets post message')
+  }
+
   loadWallets = () => {
     this.setState({debug3: 'started loadWallets'})
-    core.wallets()
+    core.wallets(null, this.doAlert)
       .then((data) => {
         this.setState({
           debug: JSON.stringify(data),
