@@ -137,7 +137,7 @@ class BuyScene extends React.Component {
     }
   }
 
-  componentWillMount () {
+  componentDidMount () {
     window.scrollTo(0, 0)
     if (this.state.wallets.length > 0) {
       this.selectWallet(this.state.wallets[0])
