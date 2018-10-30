@@ -142,10 +142,12 @@ class BuyScene extends React.Component {
     if (this.state.wallets.length > 0) {
       this.selectWallet(this.state.wallets[0])
     }
+    this.setState({debug3: 'in componentWillMount'})
     this.loadWallets()
   }
 
   loadWallets = () => {
+    this.setState({debug3: 'started loadWallets'})
     core.wallets()
       .then((data) => {
         this.setState({
@@ -176,7 +178,7 @@ class BuyScene extends React.Component {
       .catch((e) => {
         ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
         this.setState({
-          debug3: e.message
+          debug3: 'inside loadWallets catch'
         })
         ui.exit()
       })
