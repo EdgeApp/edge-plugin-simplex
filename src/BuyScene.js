@@ -168,6 +168,8 @@ class BuyScene extends React.Component {
             // Probably exit...not available wallets
           }
         })
+        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
+
       })
       .catch(() => {
         ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
