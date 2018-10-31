@@ -143,7 +143,7 @@ class BuyScene extends React.Component {
       this.selectWallet(this.state.wallets[0])
     }
     this.setState({debug3: 'in componentDidMount'})
-    this.loadWallets()
+    setTimeout(this.loadWallets, 700)
   }
 
   doAlert = () => {
