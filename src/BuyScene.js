@@ -142,7 +142,7 @@ class BuyScene extends React.Component {
     if (this.state.wallets.length > 0) {
       this.selectWallet(this.state.wallets[0])
     }
-    this.setState({debug3: 'in componentWillMount'})
+    this.setState({debug3: 'in componentDidMount'})
     this.loadWallets()
   }
 
