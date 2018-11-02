@@ -156,7 +156,7 @@ class BuyScene extends React.Component {
       .then((data) => {
         this.setState({
           debug: JSON.stringify(data),
-          debug3: 'howdy',
+          debug3: 'howdy ',
           wallets: data.filter((wallet) =>
             API.SUPPORTED_DIGITAL_CURRENCIES.indexOf(wallet.currencyCode) >= 0)
         }, () => {
