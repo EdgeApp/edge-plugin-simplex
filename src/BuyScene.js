@@ -180,7 +180,7 @@ class BuyScene extends React.Component {
         })
       })
       .catch((e) => {
-        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
+        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later..')
         this.setState({
           debug3: 'inside loadWallets catch'
         })
