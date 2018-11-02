@@ -147,7 +147,7 @@ class BuyScene extends React.Component {
   }
 
   doAlert = () => {
-    window.alert('post message', 'wallets post message')
+    window.alert('post message', 'wallets post message ')
   }
 
   loadWallets = () => {
