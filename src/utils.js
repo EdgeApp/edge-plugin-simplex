@@ -1,3 +1,6 @@
+import { core } from 'edge-libplugin'
+
+export const DEV = process.env.NODE_ENV === 'development'
 
 export function formatRate (rate, currency) {
   if (!rate) {
@@ -50,4 +53,32 @@ export const cancelableFetch = (url, data) => {
       canceled = true
     }
   }
+}
+
+export function setFiatInput (value) {
+  setDomValue('fiatInput', value)
+}
+
+export function setCryptoInput (value) {
+  setDomValue('cryptoInput', value)
+}
+
+export function setDomValue (id, value) {
+  if (document.getElementById(id)) {
+    document.getElementById(id).value = value
+  }
+}
+
+export async function retrieveAddress (walletId, currencyCode) {
+  let address = null
+  if (!DEV) {
+    const addressData = await core.getAddress(walletId, currencyCode)
+    address = addressData.address.legacyAddress
+    if (!address) {
+      address = addressData.address.publicAddress
+    }
+  } else {
+    address = '1fakejPwRxWKiSgMBUewqMCws7DLuzAHQ'
+  }
+  return address
 }

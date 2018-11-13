@@ -6,6 +6,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import StartScene from './StartScene'
 import BuyScene from './BuyScene'
+import SellScene from './SellScene'
 import PaymentsScene from './PaymentsScene'
 import EventsScene from './EventsScene'
 
@@ -31,6 +32,10 @@ export const routes = [{
 }, {
   path: '/buy/',
   main: BuyScene,
+  exact: true
+}, {
+  path: '/sell/',
+  main: SellScene,
   exact: true
 }, {
   path: '/payments/',

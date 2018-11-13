@@ -11,8 +11,11 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog'
 import { CircularProgress } from 'material-ui/Progress'
-import { formatRate, formatStatus } from './utils'
+import { DEV, formatRate, formatStatus } from './utils'
 import moment from 'moment'
+
+import * as API from './api'
+import { ui, core } from 'edge-libplugin'
 
 const limitStyles = theme => ({
   p: {
@@ -168,7 +171,7 @@ class ConfirmUnstyled extends React.Component {
         {!this.state.loading && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description" className={this.props.classes.p}>
-              Are you sure you want to buy {this.props.fiatAmount} worth of {this.props.currency}, with a fee of {this.props.fee}?
+              { this.props.message() }
             </DialogContentText>
             <div>
               <EdgeButton color="primary" onClick={this.onAccept}>
@@ -190,9 +193,7 @@ ConfirmUnstyled.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAccept: PropTypes.func.isRequired,
   classes: PropTypes.object,
-  fiatAmount: PropTypes.string,
-  fee: PropTypes.string,
-  currency: PropTypes.string
+  message: PropTypes.func.isRequired
 }
 
 export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
@@ -340,3 +341,112 @@ export const PaymentDetails = (props) => {
 PaymentDetails.propTypes = {
   payment: PropTypes.object
 }
+
+const pendingStyles = theme => ({
+  info: {
+    backgroundColor: '#fafafa',
+    color: '#000',
+    padding: '10px 20px',
+    borderRadius: '2px',
+    boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.25)'
+  }
+})
+
+export class PendingSellUnstyled extends React.Component {
+  state = {
+    pendingSpend: false
+  }
+
+  componentDidMount () {
+    this.checkQueue()
+  }
+
+  _cancel = async () => {
+    if (!this.state.pendingSpend) {
+      throw new Error('Could not find spend info')
+    }
+    const msg = this.state.pendingSpend
+    try {
+      await API.userMessageStatus(msg.msg_id, 'failed', null, null)
+    } catch (e) {
+      ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
+    }
+    return this.checkQueue()
+  }
+
+  _sendFunds = async () => {
+    if (!this.state.pendingSpend) {
+      throw new Error('Could not find spend info')
+    }
+    const msg = this.state.pendingSpend
+    const data = msg.msg
+    const info = {
+      currencyCode: data.crypto_currency,
+      publicAddress: data.destination_crypto_address.trim(),
+      nativeAmount: Math.round(data.amount * 100000000).toString()
+    }
+    if (!DEV) {
+      try {
+        const tx = await core.makeSpendRequest(info)
+        if (tx) {
+          await API.userMessageStatus(msg.msg_id, 'complete', data.amount, tx)
+          await API.userMessageAck(msg.msg_id)
+        } else {
+          await API.userMessageAck(msg.msg_id)
+        }
+      } catch (e) {
+        window.alert(e)
+      }
+    } else {
+      console.log(info)
+      console.log(`Send ${this.describeSpend()} to ${data.destination_crypto_address}`)
+      await API.userMessageAck(msg.msg_id)
+    }
+    return this.checkQueue()
+  }
+
+  describeSpend = () => {
+    const msg = this.state.pendingSpend
+    const data = msg.msg
+    return `${data.amount} ${data.crypto_currency}`
+  }
+
+  async checkQueue () {
+    const data = await API.userSellMessages()
+    const res = await data.json()
+    for (let i = 0; i < res.res.length; ++i) {
+      const m = res.res[i]
+      if (m.msg_type === 'send-crypto') {
+        this.setState({
+          pendingSpend: m
+        })
+        return
+      }
+    }
+    // No pending spends...empty out state
+    this.setState({
+      pendingSpend: null
+    })
+  }
+
+  render () {
+    if (!this.state.pendingSpend) {
+      return null
+    }
+    return (
+      <div className={this.props.classes.info}>
+        <p>
+          Your request to sell <strong>{this.describeSpend()}</strong> has been approved! You can send the funds now.
+        </p>
+        <EdgeButton color="primary" onClick={this._sendFunds}>Send Funds</EdgeButton>
+        <EdgeButton color="secondary" onClick={this._cancel}>Cancel</EdgeButton>
+      </div>
+    )
+  }
+}
+
+PendingSellUnstyled.propTypes = {
+  classes: PropTypes.object
+}
+
+export const PendingSell = withStyles(pendingStyles)(PendingSellUnstyled)

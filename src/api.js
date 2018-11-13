@@ -3,7 +3,7 @@ import React from 'react'
 import uuidv1 from 'uuid/v1'
 import { core } from 'edge-libplugin'
 
-import { cancelableFetch } from './utils'
+import { DEV, cancelableFetch } from './utils'
 
 export const PROVIDER = 'edge'
 export const API_VERSION = '1'
@@ -39,14 +39,20 @@ export const SUPPORTED_FIAT_CURRENCIES = [
   'USD', 'EUR'
 ]
 
-export const DEV = process.env.NODE_ENV === 'development'
+export const SUPPORTED_SELL_CURRENCIES = [
+  'BTC', 'BCH', 'LTC'
+]
 
 const edgeUrl = DEV
-  ? 'https://simplex-sandbox-api.edgesecure.co'
-  : 'https://simplex-api.edgesecure.co'
+  // ? 'https://simplex-sandbox-api.edgesecure.co'
+  // : 'https://simplex-api.edgesecure.co'
+  ? 'http://localhost:3000'
+  : 'http://localhost:3000'
 const simplexUrl = DEV
+  // ? 'https://sandbox.test-simplexcc.com/payments/new'
+  // : 'https://checkout.simplexcc.com/payments/new'
   ? 'https://sandbox.test-simplexcc.com/payments/new'
-  : 'https://checkout.simplexcc.com/payments/new'
+  : 'https://sandbox.test-simplexcc.com/payments/new'
 
 export function sessionId () {
   return uuidv1()
@@ -162,6 +168,97 @@ export async function requestQuote (requested, amount, digitalCurrency, fiatCurr
   }
   // Issue a new request
   lastRequest = cancelableFetch(edgeUrl + '/quote', data)
+  return lastRequest.promise
+}
+
+const encode = (params) => {
+  const data = []
+  for (const k in params) {
+    if (params[k]) {
+      data.push(k + '=' + params[k])
+    }
+  }
+  return data.join('&')
+}
+
+export async function requestSellQuote (params) {
+  requestAbort()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/sell/quote/?' + encode(params), data)
+  return lastRequest.promise
+}
+
+export async function initiateSell (quoteId, refundAddress) {
+  requestAbort()
+  const accountId = await getUserId()
+  const data = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      quote_id: quoteId,
+      refund_crypto_address: refundAddress,
+      account_id: accountId,
+      return_url: 'edge://plugin/simplex/sell'
+    })
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/sell/initiate/', data)
+  return lastRequest.promise
+}
+
+export async function userSellMessages () {
+  requestAbort()
+  const accountId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/sell/message/' + accountId + '/', data)
+  return lastRequest.promise
+}
+
+export async function userMessageAck (msgId) {
+  requestAbort()
+  const accountId = await getUserId()
+  const data = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  lastRequest = cancelableFetch(`${edgeUrl}/sell/message/${accountId}/${msgId}/ack`, data)
+  return lastRequest.promise
+}
+
+export async function userMessageStatus (msgId, status, cryptoAmountSent, blockchainTxnHash) {
+  requestAbort()
+  const accountId = await getUserId()
+  const data = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    data: {
+      id: uuidv1(),
+      status,
+      crypto_amount_sent: cryptoAmountSent,
+      blockchain_txn_hash: blockchainTxnHash
+    }
+  }
+  lastRequest = cancelableFetch(`${edgeUrl}/sell/message/${accountId}/${msgId}/response`, data)
   return lastRequest.promise
 }
 
