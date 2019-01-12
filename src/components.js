@@ -24,6 +24,13 @@ const limitStyles = theme => ({
   }
 })
 
+const buttonStyle = {
+  textTransform: 'none',
+  padding: '15px 0',
+  margin: '5px 0',
+  borderRadius: '5px'
+}
+
 export const DailyLimit = withStyles(limitStyles)((props) => {
   const {dailyLimit, monthlyLimit, fiat} = props
   return (
@@ -190,12 +197,40 @@ ConfirmUnstyled.propTypes = {
 
 export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
 
+export const WalletButton = (props) => {
+  return (
+    <Button
+      variant="raised"
+      onClick={props.onClick}
+      disabled={props.disabled}
+      style={{
+        ...buttonStyle,
+        backgroundColor: props.backgroundColor,
+        color: props.textColor,
+        margin: '0',
+        borderRadius: '0',
+        borderTop: '1px solid #d8d6d8'
+      }}
+      fullWidth>
+      {props.children}
+    </Button>
+  )
+}
+
+WalletButton.propTypes = {
+  textColor: PropTypes.string,
+  backgroundColor: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
+  disabled: PropTypes.bool
+}
+
 export class WalletDrawer extends React.Component {
   renderWallet = (wallet) => {
     return (
-      <EdgeButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)}>
+      <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor='white'>
         {wallet.name} ({wallet.currencyCode})
-      </EdgeButton>
+      </WalletButton>
     )
   }
   renderWallets = () => {
@@ -210,9 +245,9 @@ export class WalletDrawer extends React.Component {
         open={this.props.open}
         onClose={this.props.onClose}>
         <div>
-          <EdgeButton color="primary" onClick={this.props.onHeaderClick}>
-            Choose Destination Wallet
-          </EdgeButton>
+          <WalletButton color="primary" onClick={this.props.onHeaderClick} backgroundColor='white'>
+            <span style={{ fontWeight: 'bold' }}>Choose Destination Wallet</span>
+          </WalletButton>
           {this.renderWallets()}
         </div>
       </Drawer>
