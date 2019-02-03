@@ -518,6 +518,7 @@ class BuyScene extends React.Component {
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
           onHeaderClick={this.closeWallets}
+          chooseWalletText={'Choose Destination Wallet'}
           onClose={this.closeWallets}
           wallets={this.state.wallets} />
       </div>

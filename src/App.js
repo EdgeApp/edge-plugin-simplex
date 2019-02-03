@@ -7,8 +7,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import StartScene from './StartScene'
 import BuyScene from './BuyScene'
 import SellScene from './SellScene'
-import PaymentsScene from './PaymentsScene'
+import TransactionsScene from './TransactionsScene'
 import EventsScene from './EventsScene'
+import {PendingSellFromURL} from './components'
 
 const theme = createMuiTheme({
   palette: {
@@ -38,11 +39,15 @@ export const routes = [{
   main: SellScene,
   exact: true
 }, {
-  path: '/payments/',
-  main: PaymentsScene,
+  path: '/sell/execution-orders/:executionOrderId',
+  main: PendingSellFromURL,
   exact: true
 }, {
-  path: '/events/:paymentId/',
+  path: '/transactions/',
+  main: TransactionsScene,
+  exact: true
+}, {
+  path: '/:type/events/:transactionId/',
   main: EventsScene,
   exact: true
 }]

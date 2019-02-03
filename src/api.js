@@ -39,15 +39,17 @@ export const SUPPORTED_FIAT_CURRENCIES = [
   'USD', 'EUR'
 ]
 
-export const SUPPORTED_SELL_CURRENCIES = [
-  'BTC', 'BCH', 'LTC'
+export const SUPPORTED_SELL_FIAT_CURRENCIES = [
+  'EUR'
+]
+
+export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
+  'BTC'
 ]
 
 const edgeUrl = DEV
-  // ? 'https://simplex-sandbox-api.edgesecure.co'
-  // : 'https://simplex-api.edgesecure.co'
-  ? 'http://localhost:3000'
-  : 'http://localhost:3000'
+  ? 'http://localhost:4000'
+  : 'http://localhost:4000'
 const simplexUrl = DEV
   // ? 'https://sandbox.test-simplexcc.com/payments/new'
   // : 'https://checkout.simplexcc.com/payments/new'
@@ -175,7 +177,7 @@ const encode = (params) => {
   const data = []
   for (const k in params) {
     if (params[k]) {
-      data.push(k + '=' + params[k])
+      data.push(k + '=' + encodeURIComponent(params[k]))
     }
   }
   return data.join('&')
@@ -194,9 +196,9 @@ export async function requestSellQuote (params) {
   return lastRequest.promise
 }
 
-export async function initiateSell (quoteId, refundAddress) {
+export async function initiateSell (quote, refundAddress) {
   requestAbort()
-  const accountId = await getUserId()
+  const userId = await getUserId()
   const data = {
     method: 'POST',
     headers: {
@@ -204,61 +206,32 @@ export async function initiateSell (quoteId, refundAddress) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      quote_id: quoteId,
+      quote,
       refund_crypto_address: refundAddress,
-      account_id: accountId,
+      user_id: userId,
       return_url: 'edge://plugin/simplex/sell'
     })
   }
   lastRequest = cancelableFetch(edgeUrl + '/sell/initiate/', data)
   return lastRequest.promise
 }
-
-export async function userSellMessages () {
+export async function executionOrderNotifyStatus (executionOrder, status, cryptoAmountSent, txnHash) {
   requestAbort()
-  const accountId = await getUserId()
-  const data = {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
-  }
-  lastRequest = cancelableFetch(edgeUrl + '/sell/message/' + accountId + '/', data)
-  return lastRequest.promise
-}
-
-export async function userMessageAck (msgId) {
-  requestAbort()
-  const accountId = await getUserId()
-  const data = {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
-  }
-  lastRequest = cancelableFetch(`${edgeUrl}/sell/message/${accountId}/${msgId}/ack`, data)
-  return lastRequest.promise
-}
-
-export async function userMessageStatus (msgId, status, cryptoAmountSent, blockchainTxnHash) {
-  requestAbort()
-  const accountId = await getUserId()
   const data = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    data: {
-      id: uuidv1(),
+    body: JSON.stringify({
+      id: executionOrder.id,
+      sellId: executionOrder.sell_id,
       status,
-      crypto_amount_sent: cryptoAmountSent,
-      blockchain_txn_hash: blockchainTxnHash
-    }
+      cryptoAmountSent,
+      txnHash
+    })
   }
-  lastRequest = cancelableFetch(`${edgeUrl}/sell/message/${accountId}/${msgId}/response`, data)
+  lastRequest = cancelableFetch(edgeUrl + '/execution-order-notify-status/', data)
   return lastRequest.promise
 }
 
@@ -275,6 +248,43 @@ export async function payments () {
   const url = `${edgeUrl}/payments/${userId}/`
   return window.fetch(url, data)
 }
+export async function sells () {
+  const userId = await getUserId()
+
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/sells/${userId}`
+  return window.fetch(url, data)
+}
+export async function getExecutionOrder (executionOrderId) {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/execution-orders/${executionOrderId}?` + encode({userId})
+  return window.fetch(url, data)
+}
+export async function getPendingExecutionOrders () {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/execution-orders?` + encode({userId, onlyPending: true})
+  return window.fetch(url, data)
+}
 
 export async function paymentDetails (paymentId) {
   const userId = await getUserId()
@@ -286,6 +296,19 @@ export async function paymentDetails (paymentId) {
     }
   }
   const url = `${edgeUrl}/payments/${userId}/${paymentId}/`
+  return window.fetch(url, data)
+}
+
+export async function sellDetails (sellId) {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/sells/${userId}/${sellId}/`
   return window.fetch(url, data)
 }
 

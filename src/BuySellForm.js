@@ -37,8 +37,8 @@ class BuySellForm extends React.Component {
       rate: null,
       quote: null,
       fiatSupport: true,
-      fiat: 'USD',
-      defaultFiat: 'USD'
+      fiat: 'EUR',
+      defaultFiat: 'EUR'
     }
   }
 
@@ -85,12 +85,11 @@ class BuySellForm extends React.Component {
   }
 
   loadConversion = async () => {
-    const c = this.state.selectedWallet.currencyCode
-    const v = 1
+    const cryptoCurrency = this.state.selectedWallet.currencyCode
+    const cryptoAmount = 1
     try {
-      const r = await this.props.requestCryptoQuote(
-        v, c, this.state.defaultFiat, this.state.selectedWallet)
-      this.setState({rate: r.rate})
+      const fiatQuote = await this.props.requestFiatQuote(cryptoAmount, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
+      this.setState({rate: fiatQuote.rate})
     } catch (err) {
       this.setState({
         error: 'Unable to retrieve rates. Please try again later.'
@@ -135,6 +134,8 @@ class BuySellForm extends React.Component {
       rate: null,
       quote: null
     }, () => {
+      setCryptoInput('')
+      setFiatInput('')
       this.loadConversion()
     })
   }
@@ -184,18 +185,18 @@ class BuySellForm extends React.Component {
         cryptoLoading: false,
         fiatLoading: true
       })
-      const v = event.target.value
-      const c = this.state.selectedWallet.currencyCode
+      const cryptoValue = event.target.value
+      const cryptoCurrency = this.state.selectedWallet.currencyCode
       try {
-        const r = await this.props.requestFiatQuote(
-          v, c, this.state.defaultFiat, this.state.selectedWallet)
+        const fiatQuote = await this.props.requestFiatQuote(
+          cryptoValue, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
         this.setState({
           fiatLoading: false,
-          quote: r.quote,
-          rate: r.rate,
+          quote: fiatQuote.quote,
+          rate: fiatQuote.rate,
           error: null
         })
-        setFiatInput(r.quote.fiat_amount)
+        setFiatInput(fiatQuote.quote.fiat_amount)
       } catch (err) {
         console.log(err)
         this.setState({
@@ -222,11 +223,11 @@ class BuySellForm extends React.Component {
         fiatLoading: false,
         cryptoLoading: true
       })
-      const v = event.target.value
-      const c = this.state.selectedWallet.currencyCode
+      const fiatValue = event.target.value
+      const fiatCurrency = this.state.selectedWallet.currencyCode
       try {
         const r = await this.props.requestCryptoQuote(
-          v, c, this.state.defaultFiat, this.state.selectedWallet)
+          fiatValue, fiatCurrency, this.state.defaultFiat, this.state.selectedWallet)
         this.setState({
           cryptoLoading: false,
           quote: r.quote,
@@ -313,8 +314,8 @@ class BuySellForm extends React.Component {
             Please note that {selectedWallet.fiatCurrencyCode} is not supported by Simplex.
             Defaulting to
             <select defaultValue={fiat} onChange={this.changeDefaultFiat}>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              {this.props.supported_fiat_currencies.map(currency =>
+                <option key={currency} value={currency}>{currency}</option>)}
             </select>
           </Typography>
         )}
@@ -324,14 +325,14 @@ class BuySellForm extends React.Component {
               <Typography
                 component="h3"
                 className={classes.h3}>
-                Conversion Rate
+                Exchange rate
               </Typography>
               {!this.state.rate && (
                 <CircularProgress size={25} />
               )}
               {this.state.rate && (
                 <Typography component="p" className={classes.conversion}>
-                  1{this.state.rate.currency} = {formatRate(this.state.rate, fiat)}
+                  1{this.state.selectedWallet.currencyCode} = {this.state.rate} {fiat}
                 </Typography>
               )}
             </CardContent>
@@ -357,14 +358,7 @@ class BuySellForm extends React.Component {
 
         <Card className={classes.card}>
           <CardContent>
-            <Typography
-              variant="headline"
-              component="h3"
-              className={classes.h3}>
-              Sell Amount
-            </Typography>
-
-            <TextField id="cryptoInput" type="number" label="Enter Amount"
+            <TextField id="cryptoInput" type="number" label={'Enter amount you wish to sell'}
               margin="none" fullWidth
               disabled={this.state.cryptoLoading}
               InputLabelProps={{
@@ -381,7 +375,7 @@ class BuySellForm extends React.Component {
               onChange={this.calcFiat}
             />
 
-            <TextField id="fiatInput" type="number" label="Enter Amount"
+            <TextField id="fiatInput" type="number" label="You will receive"
               {...errors}
               margin="none" fullWidth
               disabled={this.state.fiatLoading}
@@ -409,7 +403,7 @@ class BuySellForm extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Typography component='p' className={classes.p}>
-              You will see a confirmation screen before you buy.
+              You will see a confirmation screen before you sell.
             </Typography>
             {quote && quote.address && (
               <p style={{textAlign: 'center', maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap'}} component='p'>
@@ -437,6 +431,7 @@ class BuySellForm extends React.Component {
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
           onHeaderClick={this.closeWallets}
+          chooseWalletText={'Choose Source Wallet'}
           onClose={this.closeWallets}
           wallets={this.state.wallets} />
       </div>

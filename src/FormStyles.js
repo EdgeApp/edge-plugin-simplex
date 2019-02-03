@@ -19,7 +19,7 @@ export const styles = theme => ({
     fontWeight: 'bold'
   },
   conversion: {
-    fontSize: '24pt',
+    fontSize: '20pt',
     color: theme.palette.primary.main
   },
   p: {
