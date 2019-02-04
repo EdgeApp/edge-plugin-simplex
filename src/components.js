@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import { withStyles } from 'material-ui/styles'
 import Button from 'material-ui/Button'
 import Typography from 'material-ui/Typography'
@@ -134,7 +134,7 @@ const confirmStyles = (theme) => ({
   }
 })
 
-class ConfirmUnstyled extends React.Component {
+class ConfirmUnstyled extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -226,7 +226,7 @@ WalletButton.propTypes = {
   disabled: PropTypes.bool
 }
 
-export class WalletDrawer extends React.Component {
+export class WalletDrawer extends Component {
   renderWallet = (wallet) => {
     return (
       <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor='white'>
@@ -352,7 +352,7 @@ const pendingStyles = theme => ({
   }
 })
 
-export class PendingSellUnstyled extends React.Component {
+class PendingSellUnstyled extends Component {
   state = {
     pendingSpend: false
   }
@@ -412,21 +412,27 @@ export class PendingSellUnstyled extends React.Component {
   }
 
   async checkQueue () {
-    const data = await API.userSellMessages()
-    const res = await data.json()
-    for (let i = 0; i < res.res.length; ++i) {
-      const m = res.res[i]
-      if (m.msg_type === 'send-crypto') {
-        this.setState({
-          pendingSpend: m
-        })
-        return
+    try {
+      const data = await API.userSellMessages()
+      const res = await data.json()
+      for (let i = 0; i < res.res.length; ++i) {
+        const m = res.res[i]
+        if (m.msg_type === 'send-crypto') {
+          this.setState({
+            pendingSpend: m
+          })
+          return
+        }
       }
+      // No pending spends...empty out state
+      this.setState({
+        pendingSpend: null
+      })
+    } catch (e) {
+      this.setState({
+        pendingSpend: null
+      })
     }
-    // No pending spends...empty out state
-    this.setState({
-      pendingSpend: null
-    })
   }
 
   render () {
