@@ -322,17 +322,21 @@ export const PaymentDetails = (props) => {
     transaction.requested_digital_currency)
   const date = moment(transaction.created_at)
   return (
-    <Grid container key={transaction.payment_id}>
+    <Grid container key={transaction.id}>
       <Grid item xs={12}>
         <Grid container className="header">
           <Grid item xs={6}><Typography>Id</Typography></Grid>
           <Grid item xs={6}><Typography>
-            <a href={transaction.url}>
-              {transaction.id}
-            </a>
-            <small>
-              {` (click to view)`}
-            </small>
+            {transaction.url
+              ? (<span>
+                <a href={transaction.url}>
+                  {transaction.id}
+                </a>
+                <small>
+                  {` (click to view)`}
+                </small>
+              </span>)
+              : (<span>{transaction.id}</span>)}
           </Typography></Grid>
         </Grid>
       </Grid>
