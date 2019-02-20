@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import { withStyles } from 'material-ui/styles'
 import Button from 'material-ui/Button'
 import Typography from 'material-ui/Typography'
@@ -134,7 +134,7 @@ const confirmStyles = (theme) => ({
   }
 })
 
-class ConfirmUnstyled extends React.Component {
+class ConfirmUnstyled extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -226,7 +226,7 @@ WalletButton.propTypes = {
   disabled: PropTypes.bool
 }
 
-export class WalletDrawer extends React.Component {
+export class WalletDrawer extends Component {
   renderWallet = (wallet) => {
     return (
       <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor='white'>
@@ -369,7 +369,7 @@ const pendingStyles = theme => ({
   }
 })
 
-export class PendingSellUnstyled extends React.Component {
+class PendingSellUnstyled extends Component {
   _cancel = async () => {
     if (!this.props.executionOrder) {
       throw new Error('Could not find spend info')
@@ -417,15 +417,15 @@ export class PendingSellUnstyled extends React.Component {
   render () {
     const executionOrder = this.props.executionOrder
     if (executionOrder) {
-      if (executionOrder.sent_at) {
+      if (executionOrder.status === 'completed') {
         return (<div>
           <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain. You will receive an email with update from Simplex.</p>
         </div>)
-      } else if (executionOrder.cancelled_at) {
+      } else if (executionOrder.status === 'cancelled') {
         return (<div>
           <p>Transaction was cancelled.</p>
         </div>)
-      } else if (executionOrder.failed_at) {
+      } else if (executionOrder.status === 'failed') {
         return (<div>
           <p>Transaction Failed</p>
         </div>)
@@ -448,7 +448,7 @@ PendingSellUnstyled.propTypes = {
   classes: PropTypes.object,
   history: PropTypes.object,
   executionOrder: PropTypes.object,
-  onDone: PropTypes.function
+  onDone: PropTypes.func
 }
 
 export const PendingSell = withStyles(pendingStyles)(PendingSellUnstyled)
