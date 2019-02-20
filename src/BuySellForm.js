@@ -50,38 +50,39 @@ class BuySellForm extends React.Component {
     this.loadWallets()
   }
 
-  loadWallets = async () => {
-    try {
-      const data = await core.wallets()
-      this.setState({
-        wallets: data.filter((wallet) =>
+  loadWallets = () => {
+    core.wallets()
+      .then((data) => {
+        this.setState({
+          wallets: data.filter((wallet) =>
           this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
-      }, () => {
-        if (this.state.wallets.length > 0) {
-          let i = 0
-          const lastWallet = window.localStorage.getItem('last_wallet')
-          if (lastWallet) {
-            for (; i < this.state.wallets.length; ++i) {
-              if (this.state.wallets[i].id === lastWallet) {
-                break
+        }, () => {
+          if (this.state.wallets.length > 0) {
+            let i = 0
+            const lastWallet = window.localStorage.getItem('last_wallet')
+            if (lastWallet) {
+              for (; i < this.state.wallets.length; ++i) {
+                if (this.state.wallets[i].id === lastWallet) {
+                  break
+                }
+              }
+              if (i >= this.state.wallets.length) {
+                i = 0
               }
             }
-            if (i >= this.state.wallets.length) {
-              i = 0
-            }
+            this.selectWallet(this.state.wallets[i])
+          } else {
+            // Probably exit...not available wallets
           }
-          this.selectWallet(this.state.wallets[i])
-        } else {
-          // Probably exit...not available wallets
-        }
+        })
       })
-    } catch (err) {
-      this.setState({
-        error: 'Unable to fetch wallets. Please try again later.'
+      .catch(() => {
+        this.setState({
+          error: 'Unable to fetch wallets. Please try again later.'
+        })
+        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
+        ui.exit()
       })
-      ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
-      ui.exit()
-    }
   }
 
   loadConversion = async () => {
