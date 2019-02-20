@@ -33,7 +33,8 @@ const eventStyles = (theme) => ({
   card: {
     flex: '1 1 auto',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'scroll'
   }
 })
 

@@ -1,7 +1,7 @@
 {
   "pluginId": "co.edgesecure.simplex",
   "name": "Simplex",
-  "subtitle": "Buy crypto with your credit card.",
+  "subtitle": "Buy/Sell crypto with your credit card.",
   "provider": "Edge Wallet",
   "iconUrl": "https://airbitz.co/static/simplex.png",
   "environment": {

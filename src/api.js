@@ -49,7 +49,7 @@ export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
 
 const edgeUrl = DEV
   ? 'http://localhost:4000'
-  : 'http://localhost:4000'
+  : 'https://simplex-sandbox-api.edgesecure.co'
 const simplexUrl = DEV
   // ? 'https://sandbox.test-simplexcc.com/payments/new'
   // : 'https://checkout.simplexcc.com/payments/new'

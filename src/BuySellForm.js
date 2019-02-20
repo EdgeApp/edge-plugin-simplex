@@ -55,7 +55,7 @@ class BuySellForm extends React.Component {
       .then((data) => {
         this.setState({
           wallets: data.filter((wallet) =>
-          this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
+            this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
         }, () => {
           if (this.state.wallets.length > 0) {
             let i = 0
@@ -304,10 +304,10 @@ class BuySellForm extends React.Component {
           <ConfirmDialog
             message={this.dialogMessage}
             open={this.state.dialogOpen}
-            acceptMsg={'Yes, go to payment'}
+            acceptMsg={'Yes, start the process'}
             rejectMsg={'Cancel'}
-            header={'Confirm Purchase Details'}
-            pendingMsg={'We are connecting to Simplex!'}
+            header={'Confirm Transaction Details'}
+            pendingMsg={'We are connecting to Simplex'}
             onAccept={this.handleAccept}
             onClose={this.handleClose}
           />

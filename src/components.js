@@ -15,7 +15,7 @@ import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './ut
 import moment from 'moment'
 
 import * as API from './api'
-import { ui, core } from 'edge-libplugin'
+import { ui } from 'edge-libplugin'
 
 const limitStyles = theme => ({
   p: {
@@ -322,17 +322,21 @@ export const PaymentDetails = (props) => {
     transaction.requested_digital_currency)
   const date = moment(transaction.created_at)
   return (
-    <Grid container key={transaction.payment_id}>
+    <Grid container key={transaction.id}>
       <Grid item xs={12}>
         <Grid container className="header">
           <Grid item xs={6}><Typography>Id</Typography></Grid>
           <Grid item xs={6}><Typography>
-            <a href={transaction.url}>
-              {transaction.id}
-            </a>
-            <small>
-              {` (click to view)`}
-            </small>
+            {transaction.url
+              ? (<span>
+                <a href={transaction.url}>
+                  {transaction.id}
+                </a>
+                <small>
+                  {` (click to view)`}
+                </small>
+              </span>)
+              : (<span>{transaction.id}</span>)}
           </Typography></Grid>
         </Grid>
       </Grid>
@@ -415,18 +419,20 @@ class PendingSellUnstyled extends Component {
       throw new Error('Could not find sendCrypto info')
     }
     const info = {
-      currencyCode: executionOrder.crypto_currency,
+      currencyCode: executionOrder.requested_digital_currency,
       publicAddress: executionOrder.destination_crypto_address.trim(),
-      nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
+      nativeAmount: Math.round(executionOrder.requested_digital_amount * 100).toString() // simplex amount in MicroBit
     }
-    let tx
+
+    let edgeTransaction
     try {
       if (!DEV) {
-        tx = await core.makeSpendRequest(info)
+        edgeTransaction = await window.edgeProvider.requestSpend([info])
       } else {
-        tx = 'blockchain_txn_hash'
+        edgeTransaction = {txid: 'blockchain_txn_hash'}
+        console.log(info)
       }
-      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, tx)
+      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, edgeTransaction.txid)
     } catch (e) {
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
