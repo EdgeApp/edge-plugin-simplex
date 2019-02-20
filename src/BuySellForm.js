@@ -304,9 +304,9 @@ class BuySellForm extends React.Component {
           <ConfirmDialog
             message={this.dialogMessage}
             open={this.state.dialogOpen}
-            acceptMsg={'Yes, go to payment'}
+            acceptMsg={'Yes, start the process'}
             rejectMsg={'Cancel'}
-            header={'Confirm Purchase Details'}
+            header={'Confirm Transaction Details'}
             pendingMsg={'We are connecting to Simplex!'}
             onAccept={this.handleAccept}
             onClose={this.handleClose}

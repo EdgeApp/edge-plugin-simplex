@@ -51,11 +51,11 @@ class TransactionsScene extends React.Component {
   componentWillMount () {
     window.scrollTo(0, 0)
     ui.title('Transactions')
-    this.loadEvents(this.currentScreen(this.state.currentTab))
+    this.loadTransactions(this.getTransactionType(this.state.currentTab))
   }
 
-  loadEvents = async (currentScreen) => {
-    if (currentScreen === 'sell') {
+  loadTransactions = async (transactionType) => {
+    if (transactionType === 'sell') {
       const sells = await API.sells()
       const sellData = await sells.json()
       this.setState({
@@ -81,7 +81,7 @@ class TransactionsScene extends React.Component {
     return (<TransactionRow
       history={this.props.history}
       transaction={transaction}
-      transactionType={this.state.currentScreen}
+      transactionType={this.getTransactionType(this.state.currentTab)}
       key={transaction.id} />)
   }
 
@@ -116,14 +116,14 @@ class TransactionsScene extends React.Component {
       </div>
     )
   }
-  currentScreen = currentTab => {
+  getTransactionType = currentTab => {
     const tabs = ['buy', 'sell']
     return tabs[currentTab]
   }
   _changeScreen = (event, currentTab) => {
-    const currentScreen = this.currentScreen(currentTab)
-    this.setState({currentScreen, currentTab})
-    this.loadEvents(currentScreen)
+    const transactionType = this.getTransactionType(currentTab)
+    this.setState({currentTab})
+    this.loadTransactions(transactionType)
   }
 
   render () {
