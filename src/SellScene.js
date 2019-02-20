@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { DEV, retrieveAddress, formatRate, convertToMillionsUnits } from './utils'
+import {DEV, retrieveAddress, convertToMillionsUnits, formatAmount} from './utils'
 import * as API from './api'
 import BuySellForm from './BuySellForm'
 
@@ -82,7 +82,7 @@ class SellScene extends Component {
         requestCryptoQuote={this.requestCryptoQuote}
         handleAccept={this.handleAccept}
         dialogMessage={(quote) => {
-          return `Are you sure you want to sell ${formatRate(quote.crypto_amount, quote.crypto_currency)} ${quote.crypto_currency}?`
+          return `Are you sure you want to sell ${formatAmount(quote.crypto_amount, quote.crypto_currency)}?`
         }}
       />
     )

@@ -155,13 +155,13 @@ class ConfirmUnstyled extends Component {
         <DialogTitle id="alert-confirm-title" disableTypography>
           <Typography component="h2" className={this.props.classes.title}>
             {this.state.loading && 'Please Wait'}
-            {!this.state.loading && 'Confirm Purchase Details'}
+            {!this.state.loading && this.props.header}
           </Typography>
         </DialogTitle>
         {this.state.loading && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description" className={this.props.classes.p}>
-              We are connecting to Simplex!
+              {this.props.pendingMsg}
             </DialogContentText>
             <div className={this.props.classes.progress}>
               <CircularProgress />
@@ -175,10 +175,10 @@ class ConfirmUnstyled extends Component {
             </DialogContentText>
             <div>
               <EdgeButton color="primary" onClick={this.onAccept}>
-                Yes, go to payment
+                {this.props.acceptMsg}
               </EdgeButton>
               <EdgeButton color="default" onClick={this.props.onClose}>
-                Cancel
+                {this.props.rejectMsg}
               </EdgeButton>
             </div>
           </DialogContent>
@@ -193,7 +193,11 @@ ConfirmUnstyled.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAccept: PropTypes.func.isRequired,
   classes: PropTypes.object,
-  message: PropTypes.func.isRequired
+  message: PropTypes.func.isRequired,
+  header: PropTypes.string.isRequired,
+  pendingMsg: PropTypes.string.isRequired,
+  rejectMsg: PropTypes.string.isRequired,
+  acceptMsg: PropTypes.string.isRequired
 }
 
 export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
@@ -376,7 +380,8 @@ class PendingSellUnstyled extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      executionOrder: this.props.executionOrder
+      executionOrder: this.props.executionOrder,
+      displayConfirmDialog: false
     }
   }
   _cancel = async () => {
@@ -389,6 +394,7 @@ class PendingSellUnstyled extends Component {
       ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
     }
     this._refreshExecutionOrder(this.state.executionOrder.id)
+    this._closeDialog()
   }
   async _refreshExecutionOrder (executionOrderId) {
     const data = await API.getExecutionOrder(executionOrderId)
@@ -396,6 +402,12 @@ class PendingSellUnstyled extends Component {
     if (pendingExecutionOrder) {
       this.setState({executionOrder: pendingExecutionOrder.res})
     }
+  }
+  _closeDialog = () => {
+    this.setState({displayConfirmDialog: false})
+  }
+  _showDialog = () => {
+    this.setState({displayConfirmDialog: true})
   }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
@@ -423,34 +435,41 @@ class PendingSellUnstyled extends Component {
   }
 
   render () {
-    let body
-    const executionOrder = this.state.executionOrder
-    if (executionOrder) {
-      if (executionOrder.status === 'completed') {
-        body = (<div>
-          <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain. You will receive an email with update from Simplex.</p>
-        </div>)
-      } else if (executionOrder.status === 'cancelled') {
-        body = (<div>
+    const getBody = () => {
+      switch (executionOrder.status) {
+        case 'completed': return (
+          <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain.
+            You will receive an email with update from Simplex.</p>
+        )
+        case 'cancelled': return (
           <p>Transaction was cancelled.</p>
-        </div>)
-      } else if (executionOrder.status === 'failed') {
-        body = (<div>
-          <p>Transaction Failed</p>
-        </div>)
-      } else {
-        body = (<div>
+        )
+        case 'failed': return (<p>Transaction Failed</p>)
+        default: return (<div>
           <p>
-          Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
+            Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
           </p>
           <div>
             <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
-            <EdgeButton color="secondary" onClick={this._cancel}>Cancel Transaction</EdgeButton>
+            <EdgeButton color="secondary" onClick={this._showDialog}>Cancel Transaction</EdgeButton>
           </div>
         </div>)
       }
-
+    }
+    const executionOrder = this.state.executionOrder
+    if (executionOrder) {
+      const body = getBody()
       return (<div className={this.props.classes.info}>
+        {this.state.displayConfirmDialog && <ConfirmDialog
+          message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
+          open={true}
+          acceptMsg={'No, let me think a little'}
+          rejectMsg={'Yes, I’m sure'}
+          header={'Cancel Transaction'}
+          pendingMsg={'Cancelling...'}
+          onClose={this._cancel}
+          onAccept={this._closeDialog}
+        />}
         {body}
       </div>)
     } else {
