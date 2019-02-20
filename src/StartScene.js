@@ -98,7 +98,7 @@ class StartScene extends React.Component {
         <div className="text-center">
           <div className="iconLogo" />
         </div>
-        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder} onDone={this._fetchPendingExecutionOrders.bind(this)}/>}
+        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder}/>}
         <div>
           <StartHeader text="Simplex" classes={classes} />
           <StartParagraph classes={classes}>

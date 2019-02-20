@@ -78,6 +78,12 @@ export function setDomValue (id, value) {
     document.getElementById(id).value = value
   }
 }
+export const describeSpend = (executionOrder) => {
+  if (!executionOrder) {
+    return null
+  }
+  return `${convertFromMillionsUnits(executionOrder.requested_digital_amount)} ${executionOrder.requested_digital_currency}`
+}
 
 export async function retrieveAddress (walletId, currencyCode) {
   let address = null

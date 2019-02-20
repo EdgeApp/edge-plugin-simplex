@@ -11,7 +11,7 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog'
 import { CircularProgress } from 'material-ui/Progress'
-import { DEV, formatRate, formatStatus, convertFromMillionsUnits, formatAmount } from './utils'
+import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './utils'
 import moment from 'moment'
 
 import * as API from './api'
@@ -365,25 +365,40 @@ const pendingStyles = theme => ({
     padding: '10px 20px',
     marginBottom: '20px',
     borderRadius: '2px',
-    boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.25)'
+    boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.25)',
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column'
   }
 })
 
 class PendingSellUnstyled extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      executionOrder: this.props.executionOrder
+    }
+  }
   _cancel = async () => {
-    if (!this.props.executionOrder) {
+    if (!this.state.executionOrder) {
       throw new Error('Could not find spend info')
     }
     try {
-      await API.executionOrderNotifyStatus(this.props.executionOrder, 'cancelled')
+      await API.executionOrderNotifyStatus(this.state.executionOrder, 'cancelled')
     } catch (e) {
       ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
     }
-    this.props.onDone()
+    this._refreshExecutionOrder(this.state.executionOrder.id)
   }
-
+  async _refreshExecutionOrder (executionOrderId) {
+    const data = await API.getExecutionOrder(executionOrderId)
+    const pendingExecutionOrder = await data.json()
+    if (pendingExecutionOrder) {
+      this.setState({executionOrder: pendingExecutionOrder.res})
+    }
+  }
   _sendFunds = async () => {
-    const executionOrder = this.props.executionOrder
+    const executionOrder = this.state.executionOrder
     if (!executionOrder) {
       throw new Error('Could not find sendCrypto info')
     }
@@ -403,41 +418,41 @@ class PendingSellUnstyled extends Component {
     } catch (e) {
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
-    this.props.onDone()
-  }
 
-  describeSpend = () => {
-    const data = this.props.executionOrder
-    if (!data) {
-      return null
-    }
-    return `${convertFromMillionsUnits(data.requested_digital_amount)} ${data.requested_digital_currency}`
+    this._refreshExecutionOrder(this.state.executionOrder.id)
   }
 
   render () {
-    const executionOrder = this.props.executionOrder
+    let body
+    const executionOrder = this.state.executionOrder
     if (executionOrder) {
       if (executionOrder.status === 'completed') {
-        return (<div>
+        body = (<div>
           <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain. You will receive an email with update from Simplex.</p>
         </div>)
       } else if (executionOrder.status === 'cancelled') {
-        return (<div>
+        body = (<div>
           <p>Transaction was cancelled.</p>
         </div>)
       } else if (executionOrder.status === 'failed') {
-        return (<div>
+        body = (<div>
           <p>Transaction Failed</p>
         </div>)
       } else {
-        return (<div className={this.props.classes.info}>
+        body = (<div>
           <p>
-            Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{this.describeSpend()}</strong> to the broker.
+          Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
           </p>
-          <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
-          <EdgeButton color="secondary" onClick={this._cancel}>Cancel Transaction</EdgeButton>
+          <div>
+            <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
+            <EdgeButton color="secondary" onClick={this._cancel}>Cancel Transaction</EdgeButton>
+          </div>
         </div>)
       }
+
+      return (<div className={this.props.classes.info}>
+        {body}
+      </div>)
     } else {
       return null
     }
@@ -447,8 +462,7 @@ class PendingSellUnstyled extends Component {
 PendingSellUnstyled.propTypes = {
   classes: PropTypes.object,
   history: PropTypes.object,
-  executionOrder: PropTypes.object,
-  onDone: PropTypes.func
+  executionOrder: PropTypes.object
 }
 
 export const PendingSell = withStyles(pendingStyles)(PendingSellUnstyled)
@@ -477,7 +491,10 @@ export class PendingSellFromURLUnStyled extends React.Component {
 
   render () {
     return (<div className={this.props.classes.container}>
-      <PendingSell history={this.props.history} executionOrder={this.state.executionOrder} onDone={this._fetchExecutionOrder.bind(this)}/>
+      {this.state.executionOrder && <div>
+        <h3 className={this.props.classes.header}> Selling <strong>{describeSpend(this.state.executionOrder)}</strong> to Credit Card</h3>
+        <PendingSell history={this.props.history} executionOrder={this.state.executionOrder} />
+      </div>}
       <EdgeButton onClick={this._home}>Back to Wallet</EdgeButton>
 
     </div>)
@@ -496,6 +513,9 @@ const pendingUrlStyles = theme => ({
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: '100%'
+  },
+  header: {
+    textAlign: 'center'
   }
 })
 export const PendingSellFromURL = withStyles(pendingUrlStyles)(PendingSellFromURLUnStyled)
