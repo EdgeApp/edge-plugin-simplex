@@ -11,6 +11,12 @@ export function formatRate (rate, currency) {
     currency: currency
   })
 }
+export function formatAmount (rate, currency) {
+  if (!rate) {
+    return ''
+  }
+  return `${parseFloat(rate).toFixed(3)} ${currency}`
+}
 
 export function formatStatus (status) {
   if (status === 'submitted') {
@@ -23,6 +29,10 @@ export function formatStatus (status) {
     return 'Declined'
   } else if (status === 'cancelled') {
     return 'Cancelled'
+  } else if (status === 'sent') {
+    return 'Sent'
+  } else if (status === 'refunded') {
+    return 'Refunded'
   }
   return status
 }
@@ -68,6 +78,12 @@ export function setDomValue (id, value) {
     document.getElementById(id).value = value
   }
 }
+export const describeSpend = (executionOrder) => {
+  if (!executionOrder) {
+    return null
+  }
+  return `${convertFromMillionsUnits(executionOrder.requested_digital_amount)} ${executionOrder.requested_digital_currency}`
+}
 
 export async function retrieveAddress (walletId, currencyCode) {
   let address = null
@@ -81,4 +97,10 @@ export async function retrieveAddress (walletId, currencyCode) {
     address = '1fakejPwRxWKiSgMBUewqMCws7DLuzAHQ'
   }
   return address
+}
+export function convertToMillionsUnits (val) {
+  return val * 1000000
+}
+export function convertFromMillionsUnits (val) {
+  return val / 1000000
 }

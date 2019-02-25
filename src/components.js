@@ -11,7 +11,7 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog'
 import { CircularProgress } from 'material-ui/Progress'
-import { DEV, formatRate, formatStatus } from './utils'
+import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './utils'
 import moment from 'moment'
 
 import * as API from './api'
@@ -155,13 +155,13 @@ class ConfirmUnstyled extends Component {
         <DialogTitle id="alert-confirm-title" disableTypography>
           <Typography component="h2" className={this.props.classes.title}>
             {this.state.loading && 'Please Wait'}
-            {!this.state.loading && 'Confirm Purchase Details'}
+            {!this.state.loading && this.props.header}
           </Typography>
         </DialogTitle>
         {this.state.loading && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description" className={this.props.classes.p}>
-              We are connecting to Simplex!
+              {this.props.pendingMsg}
             </DialogContentText>
             <div className={this.props.classes.progress}>
               <CircularProgress />
@@ -175,10 +175,10 @@ class ConfirmUnstyled extends Component {
             </DialogContentText>
             <div>
               <EdgeButton color="primary" onClick={this.onAccept}>
-                Yes, go to payment
+                {this.props.acceptMsg}
               </EdgeButton>
               <EdgeButton color="default" onClick={this.props.onClose}>
-                Cancel
+                {this.props.rejectMsg}
               </EdgeButton>
             </div>
           </DialogContent>
@@ -193,7 +193,11 @@ ConfirmUnstyled.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAccept: PropTypes.func.isRequired,
   classes: PropTypes.object,
-  message: PropTypes.func.isRequired
+  message: PropTypes.func.isRequired,
+  header: PropTypes.string.isRequired,
+  pendingMsg: PropTypes.string.isRequired,
+  rejectMsg: PropTypes.string.isRequired,
+  acceptMsg: PropTypes.string.isRequired
 }
 
 export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
@@ -247,7 +251,7 @@ export class WalletDrawer extends Component {
         onClose={this.props.onClose}>
         <div>
           <WalletButton color="primary" onClick={this.props.onHeaderClick} backgroundColor='white'>
-            <span style={{ fontWeight: 'bold' }}>Choose Destination Wallet</span>
+            <span style={{ fontWeight: 'bold' }}>{this.props.chooseWalletText}</span>
           </WalletButton>
           {this.renderWallets()}
         </div>
@@ -261,59 +265,79 @@ WalletDrawer.propTypes = {
   selectWallet: PropTypes.func.isRequired,
   onHeaderClick: PropTypes.func,
   onClose: PropTypes.func,
+  chooseWalletText: PropTypes.string,
   wallets: PropTypes.array
 }
 
-export const PaymentRow = (props) => {
-  const payment = props.payment
-  const status = formatStatus(payment.status)
-  const fiatAmount = formatRate(
-    payment.fiat_total_amount,
-    payment.fiat_currency)
-  const cryptoAmount = formatRate(
-    payment.requested_digital_amount,
-    payment.requested_digital_currency)
-  const date = moment(payment.created_at)
+export const TransactionRow = (props) => {
+  const transaction = props.transaction
+  const status = formatStatus(transaction.status)
+  const fiatAmount = transaction.fiat_total_amount
+  const fiatCurrency = transaction.fiat_currency
+  const cryptoAmount = transaction.requested_digital_amount
+  const cryptoCurrency = transaction.requested_digital_currency
+  let transactionId
+  if (props.transactionType === 'sell') {
+    transactionId = transaction.id
+  } else {
+    transactionId = transaction.payment_id
+  }
+
+  const transactionFiat = formatAmount(fiatAmount, fiatCurrency)
+  const transactionCrypto = formatAmount(cryptoAmount, cryptoCurrency)
+  const date = moment(transaction.created_at)
   const onClick = () => {
     if (props.history) {
-      props.history.push(`/events/${payment.payment_id}/`)
+      props.history.push(`/${props.transactionType}/events/${transactionId}/`)
     }
   }
   return (
-    <Grid container key={payment.payment_id} onClick={onClick}>
-      <Grid item xs={6} scope="row">
+    <Grid container key={transaction.id} onClick={onClick}>
+      <Grid item xs={5} scope="row">
         <Typography variant="body1">{date.format('LL')}</Typography>
         <Typography variant="caption">{date.format('LT')}</Typography>
       </Grid>
-      <Grid item xs={3}>
-        <Typography variant="caption">{fiatAmount} {payment.fiat_currency}</Typography>
-        <Typography variant="caption">{cryptoAmount} {payment.requested_digital_currency}</Typography>
+      <Grid item xs={4}>
+        <Typography variant="caption">{transactionFiat}</Typography>
+        <Typography variant="caption">{transactionCrypto}</Typography>
       </Grid>
       <Grid item xs={3}>{status}</Grid>
     </Grid>
   )
 }
 
-PaymentRow.propTypes = {
-  payment: PropTypes.object,
+TransactionRow.propTypes = {
+  transaction: PropTypes.object,
+  transactionType: PropTypes.string,
   history: PropTypes.object
 }
 
 export const PaymentDetails = (props) => {
-  const payment = props.payment
+  const transaction = props.transaction
   const fiatAmount = formatRate(
-    payment.fiat_total_amount,
-    payment.fiat_currency)
+    transaction.fiat_total_amount,
+    transaction.fiat_currency)
   const cryptoAmount = formatRate(
-    payment.requested_digital_amount,
-    payment.requested_digital_currency)
-  const date = moment(payment.created_at)
+    transaction.requested_digital_amount,
+    transaction.requested_digital_currency)
+  const date = moment(transaction.created_at)
   return (
-    <Grid container key={payment.payment_id}>
+    <Grid container key={transaction.id}>
       <Grid item xs={12}>
         <Grid container className="header">
-          <Grid item xs={6}><Typography>Payment Id</Typography></Grid>
-          <Grid item xs={6}><Typography>{payment.payment_id}</Typography></Grid>
+          <Grid item xs={6}><Typography>Id</Typography></Grid>
+          <Grid item xs={6}><Typography>
+            {transaction.url
+              ? (<span>
+                <a href={transaction.url}>
+                  {transaction.id}
+                </a>
+                <small>
+                  {` (click to view)`}
+                </small>
+              </span>)
+              : (<span>{transaction.id}</span>)}
+          </Typography></Grid>
         </Grid>
       </Grid>
       <Grid item xs={12}>
@@ -329,7 +353,7 @@ export const PaymentDetails = (props) => {
           <Grid item xs={6}><Typography>Amount</Typography></Grid>
           <Grid item xs={6}>
             <Typography>
-              {fiatAmount} {payment.fiat_currency} / {cryptoAmount} {payment.requested_digital_currency}
+              {formatAmount(fiatAmount, transaction.fiat_currency)} / {formatAmount(cryptoAmount, transaction.requested_digital_currency)}
             </Typography>
           </Grid>
         </Grid>
@@ -339,7 +363,7 @@ export const PaymentDetails = (props) => {
 }
 
 PaymentDetails.propTypes = {
-  payment: PropTypes.object
+  transaction: PropTypes.object
 }
 
 const pendingStyles = theme => ({
@@ -347,112 +371,174 @@ const pendingStyles = theme => ({
     backgroundColor: '#fafafa',
     color: '#000',
     padding: '10px 20px',
+    marginBottom: '20px',
     borderRadius: '2px',
-    boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.25)'
+    boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.25)',
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column'
   }
 })
 
 class PendingSellUnstyled extends Component {
-  state = {
-    pendingSpend: false
+  constructor (props) {
+    super(props)
+    this.state = {
+      executionOrder: this.props.executionOrder,
+      displayConfirmDialog: false
+    }
   }
-
-  componentDidMount () {
-    this.checkQueue()
-  }
-
   _cancel = async () => {
-    if (!this.state.pendingSpend) {
+    if (!this.state.executionOrder) {
       throw new Error('Could not find spend info')
     }
-    const msg = this.state.pendingSpend
     try {
-      await API.userMessageStatus(msg.msg_id, 'failed', null, null)
+      await API.executionOrderNotifyStatus(this.state.executionOrder, 'cancelled')
     } catch (e) {
       ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
     }
-    return this.checkQueue()
+    this._refreshExecutionOrder(this.state.executionOrder.id)
+    this._closeDialog()
   }
-
+  async _refreshExecutionOrder (executionOrderId) {
+    const data = await API.getExecutionOrder(executionOrderId)
+    const pendingExecutionOrder = await data.json()
+    if (pendingExecutionOrder) {
+      this.setState({executionOrder: pendingExecutionOrder.res})
+    }
+  }
+  _closeDialog = () => {
+    this.setState({displayConfirmDialog: false})
+  }
+  _showDialog = () => {
+    this.setState({displayConfirmDialog: true})
+  }
   _sendFunds = async () => {
-    if (!this.state.pendingSpend) {
-      throw new Error('Could not find spend info')
+    const executionOrder = this.state.executionOrder
+    if (!executionOrder) {
+      throw new Error('Could not find sendCrypto info')
     }
-    const msg = this.state.pendingSpend
-    const data = msg.msg
     const info = {
-      currencyCode: data.crypto_currency,
-      publicAddress: data.destination_crypto_address.trim(),
-      nativeAmount: Math.round(data.amount * 100000000).toString()
+      currencyCode: executionOrder.crypto_currency,
+      publicAddress: executionOrder.destination_crypto_address.trim(),
+      nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
     }
-    if (!DEV) {
-      try {
-        const tx = await core.makeSpendRequest(info)
-        if (tx) {
-          await API.userMessageStatus(msg.msg_id, 'complete', data.amount, tx)
-          await API.userMessageAck(msg.msg_id)
-        } else {
-          await API.userMessageAck(msg.msg_id)
-        }
-      } catch (e) {
-        window.alert(e)
-      }
-    } else {
-      console.log(info)
-      console.log(`Send ${this.describeSpend()} to ${data.destination_crypto_address}`)
-      await API.userMessageAck(msg.msg_id)
-    }
-    return this.checkQueue()
-  }
-
-  describeSpend = () => {
-    const msg = this.state.pendingSpend
-    const data = msg.msg
-    return `${data.amount} ${data.crypto_currency}`
-  }
-
-  async checkQueue () {
+    let tx
     try {
-      const data = await API.userSellMessages()
-      const res = await data.json()
-      for (let i = 0; i < res.res.length; ++i) {
-        const m = res.res[i]
-        if (m.msg_type === 'send-crypto') {
-          this.setState({
-            pendingSpend: m
-          })
-          return
-        }
+      if (!DEV) {
+        tx = await core.makeSpendRequest(info)
+      } else {
+        tx = 'blockchain_txn_hash'
       }
-      // No pending spends...empty out state
-      this.setState({
-        pendingSpend: null
-      })
+      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, tx)
     } catch (e) {
-      this.setState({
-        pendingSpend: null
-      })
+      await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
+
+    this._refreshExecutionOrder(this.state.executionOrder.id)
   }
 
   render () {
-    if (!this.state.pendingSpend) {
+    const getBody = () => {
+      switch (executionOrder.status) {
+        case 'completed': return (
+          <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain.
+            You will receive an email with update from Simplex.</p>
+        )
+        case 'cancelled': return (
+          <p>Transaction was cancelled.</p>
+        )
+        case 'failed': return (<p>Transaction Failed</p>)
+        default: return (<div>
+          <p>
+            Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
+          </p>
+          <div>
+            <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
+            <EdgeButton color="secondary" onClick={this._showDialog}>Cancel Transaction</EdgeButton>
+          </div>
+        </div>)
+      }
+    }
+    const executionOrder = this.state.executionOrder
+    if (executionOrder) {
+      const body = getBody()
+      return (<div className={this.props.classes.info}>
+        {this.state.displayConfirmDialog && <ConfirmDialog
+          message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
+          open={true}
+          acceptMsg={'No, let me think a little'}
+          rejectMsg={'Yes, I’m sure'}
+          header={'Cancel Transaction'}
+          pendingMsg={'Cancelling...'}
+          onClose={this._cancel}
+          onAccept={this._closeDialog}
+        />}
+        {body}
+      </div>)
+    } else {
       return null
     }
-    return (
-      <div className={this.props.classes.info}>
-        <p>
-          Your request to sell <strong>{this.describeSpend()}</strong> has been approved! You can send the funds now.
-        </p>
-        <EdgeButton color="primary" onClick={this._sendFunds}>Send Funds</EdgeButton>
-        <EdgeButton color="secondary" onClick={this._cancel}>Cancel</EdgeButton>
-      </div>
-    )
   }
 }
 
 PendingSellUnstyled.propTypes = {
-  classes: PropTypes.object
+  classes: PropTypes.object,
+  history: PropTypes.object,
+  executionOrder: PropTypes.object
 }
 
 export const PendingSell = withStyles(pendingStyles)(PendingSellUnstyled)
+
+export class PendingSellFromURLUnStyled extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      executionOrder: null
+    }
+  }
+  componentDidMount () {
+    this._fetchExecutionOrder()
+  }
+  async _fetchExecutionOrder () {
+    const data = await API.getExecutionOrder(this.props.match.params.executionOrderId)
+    const pendingExecutionOrder = await data.json()
+    if (pendingExecutionOrder) {
+      this.setState({executionOrder: pendingExecutionOrder.res})
+    }
+  }
+
+  _home = () => {
+    this.props.history.push('/')
+  }
+
+  render () {
+    return (<div className={this.props.classes.container}>
+      {this.state.executionOrder && <div>
+        <h3 className={this.props.classes.header}> Selling <strong>{describeSpend(this.state.executionOrder)}</strong> to Credit Card</h3>
+        <PendingSell history={this.props.history} executionOrder={this.state.executionOrder} />
+      </div>}
+      <EdgeButton onClick={this._home}>Back to Wallet</EdgeButton>
+
+    </div>)
+  }
+}
+
+PendingSellFromURLUnStyled.propTypes = {
+  match: PropTypes.object,
+  classes: PropTypes.object,
+  history: PropTypes.object
+}
+
+const pendingUrlStyles = theme => ({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%'
+  },
+  header: {
+    textAlign: 'center'
+  }
+})
+export const PendingSellFromURL = withStyles(pendingUrlStyles)(PendingSellFromURLUnStyled)

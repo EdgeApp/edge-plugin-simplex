@@ -3,13 +3,16 @@ import React from 'react'
 import { withStyles } from 'material-ui/styles'
 import Typography from 'material-ui/Typography'
 import Card, { CardContent } from 'material-ui/Card'
+import AppBar from 'material-ui/AppBar'
+import Tabs from 'material-ui/Tabs/Tabs'
+import Tab from 'material-ui/Tabs/Tab'
 import Grid from 'material-ui/Grid'
 import { CircularProgress } from 'material-ui/Progress'
 import { ui } from 'edge-libplugin'
 
 import * as API from './api'
 import {
-  PaymentRow,
+  TransactionRow,
   Support,
   PoweredBy
 } from './components'
@@ -29,18 +32,18 @@ const eventStyles = (theme) => ({
 
   },
   card: {
-    margin: '20px',
     flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column'
   }
 })
 
-class PaymentsScene extends React.Component {
+class TransactionsScene extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      payments: [],
+      currentTab: 0,
+      transactions: [],
       loaded: false
     }
   }
@@ -48,43 +51,53 @@ class PaymentsScene extends React.Component {
   componentWillMount () {
     window.scrollTo(0, 0)
     ui.title('Transactions')
-    this.loadEvents()
+    this.loadTransactions(this.getTransactionType(this.state.currentTab))
   }
 
-  loadEvents = () => {
-    API.payments()
-      .then(d => d.json())
-      .then((data) => {
-        this.setState({
-          payments: data.res || [],
-          loaded: true
+  loadTransactions = async (transactionType) => {
+    if (transactionType === 'sell') {
+      const sells = await API.sells()
+      const sellData = await sells.json()
+      this.setState({
+        transactions: sellData.res || [],
+        loaded: true
+      })
+    } else {
+      API.payments()
+        .then(d => d.json())
+        .then((data) => {
+          this.setState({
+            transactions: data.res || [],
+            loaded: true
+          })
         })
-      })
-      .catch(() => {
-        // Unable to load payments at this time...
-      })
+        .catch(() => {
+          // Unable to load payments at this time...
+        })
+    }
   }
 
-  _renderPayment = (payment) => {
-    return (<PaymentRow
+  _renderTransaction = (transaction) => {
+    return (<TransactionRow
       history={this.props.history}
-      payment={payment}
-      key={payment.payment_id} />)
+      transaction={transaction}
+      transactionType={this.getTransactionType(this.state.currentTab)}
+      key={transaction.id} />)
   }
 
-  _renderPayments = () => {
+  _renderTransactions = () => {
     return (
       <Grid container>
         <Grid item xs={12}>
           <Grid container className="header">
-            <Grid item xs={6}><Typography>Created</Typography></Grid>
-            <Grid item xs={3}><Typography>Amount</Typography></Grid>
+            <Grid item xs={5}><Typography>Created</Typography></Grid>
+            <Grid item xs={4}><Typography>Amount</Typography></Grid>
             <Grid item xs={3}><Typography>Status</Typography></Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} className="body">
-          {this.state.payments.map(payment => {
-            return this._renderPayment(payment)
+          {this.state.transactions.map(transaction => {
+            return this._renderTransaction(transaction)
           })}
         </Grid>
       </Grid>
@@ -103,13 +116,29 @@ class PaymentsScene extends React.Component {
       </div>
     )
   }
+  getTransactionType = currentTab => {
+    const tabs = ['buy', 'sell']
+    return tabs[currentTab]
+  }
+  _changeScreen = (event, currentTab) => {
+    const transactionType = this.getTransactionType(currentTab)
+    this.setState({currentTab})
+    this.loadTransactions(transactionType)
+  }
 
   render () {
-    const body = this.state.payments.length > 0
-      ? this._renderPayments()
+    const body = this.state.transactions.length > 0
+      ? this._renderTransactions()
       : this._renderEmpty()
     return (
       <div className={this.props.classes.paymentScene}>
+        <AppBar position="static">
+          <Tabs fullWidth indicatorColor={'white'} onChange={this._changeScreen} value={this.state.currentTab} >
+            <Tab label={'Buy Crypto'}/>
+            <Tab label={'Sell Crypto'}/>
+          </Tabs>
+        </AppBar>
+
         <div className="flex-fill d-flex">
           <Card className={this.props.classes.card}>
             <CardContent className="d-flex flex-fill">
@@ -127,9 +156,9 @@ class PaymentsScene extends React.Component {
   }
 }
 
-PaymentsScene.propTypes = {
+TransactionsScene.propTypes = {
   classes: PropTypes.object,
   history: PropTypes.object
 }
 
-export default withStyles(eventStyles)(PaymentsScene)
+export default withStyles(eventStyles)(TransactionsScene)

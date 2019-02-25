@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { DEV, retrieveAddress, formatRate } from './utils'
+import {DEV, retrieveAddress, convertToMillionsUnits, formatAmount} from './utils'
 import * as API from './api'
 import BuySellForm from './BuySellForm'
 
@@ -23,6 +23,7 @@ const formatResponse = async (res, wallet, valueType, value, cryptoCode, fiatCod
     quote_id: res.quote_id,
     rate: res.rate,
     fiat_amount: fiatAmount,
+    fiat_currency: fiatCode,
     crypto_currency: cryptoCode,
     crypto_amount: cryptoAmount,
     refund_address: address
@@ -47,7 +48,7 @@ class SellScene extends Component {
   requestFiatQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
     console.log(value + ' ' + cryptoCode + ' ' + fiatCode)
     const data = await API.requestSellQuote({
-      base_currency: cryptoCode, base_amount: value, quote_currency: fiatCode
+      base_currency: cryptoCode, base_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
     const r = await data.json()
     return formatResponse(r.res, selectedWallet, 'crypto', value, cryptoCode, fiatCode)
@@ -55,35 +56,33 @@ class SellScene extends Component {
 
   requestCryptoQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
     const data = await API.requestSellQuote({
-      base_currency: fiatCode, base_amount: value, quote_currency: cryptoCode
+      base_currency: cryptoCode, quote_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
     const r = await data.json()
     return formatResponse(r.res, selectedWallet, 'fiat', value, cryptoCode, fiatCode)
   }
 
   handleAccept = async (uaid, quote) => {
-    const data = await API.initiateSell(quote.quote_id, quote.refund_address)
-    const r = await data.json()
-    console.log(r)
-    console.log(r.res.txn_id)
-    console.log(r.res.txn_url)
-    console.log(quote.refund_address)
-    window.location.href = r.res.txn_url
+    const data = await API.initiateSell(quote, quote.refund_address)
+    const transaction = await data.json()
+    if (transaction.err) {
+      throw new Error(transaction.err)
+    }
+    window.location.href = transaction.res.txn_url
   }
 
   render () {
     return (
       <BuySellForm
         history={this.props.history}
-        supported_fiat_currencies={API.SUPPORTED_FIAT_CURRENCIES}
-        supported_digital_currencies={API.SUPPORTED_SELL_CURRENCIES}
+        supported_fiat_currencies={API.SUPPORTED_SELL_FIAT_CURRENCIES}
+        supported_digital_currencies={API.SUPPORTED_SELL_DIGITAL_CURRENCIES}
         wallets={this.wallets}
         requestFiatQuote={this.requestFiatQuote}
         requestCryptoQuote={this.requestCryptoQuote}
         handleAccept={this.handleAccept}
         dialogMessage={(quote) => {
-          console.log('got here!')
-          return `Are you sure you want to sell ${formatRate(quote.crypto_amount, quote.crypto_currency)} ${quote.crypto_currency}?`
+          return `Are you sure you want to sell ${formatAmount(quote.crypto_amount, quote.crypto_currency)}?`
         }}
       />
     )

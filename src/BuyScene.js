@@ -381,6 +381,10 @@ class BuyScene extends React.Component {
           <ConfirmDialog
             address={quote.address}
             open={this.state.dialogOpen}
+            acceptMsg={'Yes, go to payment'}
+            rejectMsg={'Cancel'}
+            header={'Confirm Purchase Details'}
+            pendingMsg={'We are connecting to Simplex!'}
             onAccept={this.handleAccept}
             onClose={this.handleClose}
             message={() => {
@@ -518,6 +522,7 @@ class BuyScene extends React.Component {
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
           onHeaderClick={this.closeWallets}
+          chooseWalletText={'Choose Destination Wallet'}
           onClose={this.closeWallets}
           wallets={this.state.wallets} />
       </div>
