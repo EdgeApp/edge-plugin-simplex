@@ -54,7 +54,9 @@ export const routes = [{
 
 const appStyles = (theme) => ({
   content: {
-    height: '100%'
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   }
 })
 

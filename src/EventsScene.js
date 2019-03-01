@@ -21,7 +21,8 @@ import './inline.css'
 const eventStyles = (theme) => ({
   eventScene: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flexGrow: 1
   },
   h3: {
     color: theme.palette.primary.main,
