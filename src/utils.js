@@ -31,6 +31,8 @@ export function formatStatus (status) {
     return 'Cancelled'
   } else if (status === 'sent') {
     return 'Sent'
+  } else if (status === 'failed') {
+    return 'Failed'
   } else if (status === 'refunded') {
     return 'Refunded'
   }
