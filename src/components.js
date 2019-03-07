@@ -436,7 +436,7 @@ class PendingSellUnstyled extends Component {
       throw new Error('Could not find sendCrypto info')
     }
     const info = {
-      currencyCode: executionOrder.requested_digital_currency,
+      wallet,
       publicAddress: executionOrder.destination_crypto_address.trim(),
       nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
     }
