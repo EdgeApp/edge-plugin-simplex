@@ -430,6 +430,8 @@ class PendingSellUnstyled extends Component {
   }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
+    await core.chooseWallet([executionOrder.requested_digital_currency])
+    const wallet = await core.selectedWallet([executionOrder.requested_digital_currency])
     if (!executionOrder) {
       throw new Error('Could not find sendCrypto info')
     }
@@ -441,13 +443,14 @@ class PendingSellUnstyled extends Component {
     let tx
     try {
       if (!DEV) {
-        tx = await core.makeSpendRequest(info)
+        tx = await core.requestSpend(null, info.publicAddress, info.nativeAmount)
       } else {
         tx = 'blockchain_txn_hash'
+        console.log(info)
       }
       await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, tx)
     } catch (e) {
-      window.alert(e)
+      window.alert(JSON.stringify({info, e}))
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
 
