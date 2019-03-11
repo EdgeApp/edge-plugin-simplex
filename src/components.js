@@ -434,14 +434,14 @@ class PendingSellUnstyled extends Component {
       throw new Error('Could not find sendCrypto info')
     }
     const info = {
-      currencyCode: executionOrder.requested_digital_currency,
       publicAddress: executionOrder.destination_crypto_address.trim(),
       nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
     }
     let tx
     try {
       if (!DEV) {
-        tx = await core.makeSpendRequest(info)
+        const wallet = await core.selectedWallet([executionOrder.requested_digital_currency])
+        tx = await core.requestSpend(wallet, info.publicAddress, info.nativeAmount)
       } else {
         tx = 'blockchain_txn_hash'
       }
