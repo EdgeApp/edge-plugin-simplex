@@ -15,7 +15,7 @@ import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './ut
 import moment from 'moment'
 
 import * as API from './api'
-import { ui, core } from 'edge-libplugin'
+import { ui } from 'edge-libplugin'
 
 const limitStyles = theme => ({
   p: {
@@ -436,18 +436,18 @@ class PendingSellUnstyled extends Component {
     const info = {
       currencyCode: executionOrder.requested_digital_currency,
       publicAddress: executionOrder.destination_crypto_address.trim(),
-      nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
+      nativeAmount: Math.round(executionOrder.requested_digital_amount * 100).toString() // simplex amount in MicroBit
     }
-    let tx
+
+    let edgeTransaction
     try {
       if (!DEV) {
-        console.log(info)
-        tx = await window.edgeProvider.requestSpend([info])
+        edgeTransaction = await window.edgeProvider.requestSpend([info])
       } else {
-        tx = 'blockchain_txn_hash'
+        edgeTransaction = {txid: 'blockchain_txn_hash'}
         console.log(info)
       }
-      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, tx)
+      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, edgeTransaction.txid)
     } catch (e) {
       window.alert(JSON.stringify({info, e}))
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
@@ -470,7 +470,7 @@ class PendingSellUnstyled extends Component {
         default: return (<div>
           <p>
             Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
-            {JSON.stringify(window.edgeProvider)}
+            {console.log(executionOrder)}
           </p>
           <div>
             <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>

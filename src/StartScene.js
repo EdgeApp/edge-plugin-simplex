@@ -101,7 +101,6 @@ class StartScene extends React.Component {
         {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder}/>}
         <div>
           <StartHeader text="Simplex" classes={classes} />
-          {JSON.stringify(window.edgeProvider)}
           <StartParagraph classes={classes}>
             Simplex is an Edge Wallet bank and card processing partner. It is
             the service which allows you to purchase Bitcoin, Bitcoin Cash,
