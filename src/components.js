@@ -83,7 +83,7 @@ export const SupportLink = (props) => {
 const supportThemes = theme => ({
   p: {
     textAlign: 'center',
-    padding: '0 0 20px 0'
+    padding: '10px 0'
   }
 })
 
@@ -100,19 +100,34 @@ Support.propTypes = {
 }
 
 const powerThemes = (theme) => ({
+  container: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#d9e3ec'
+  },
+  logo: {
+    height: '30px',
+    padding: 0,
+    margin: 0
+  },
   p: {
-    backgroundColor: '#d9e3ec',
     fontColor: theme.palette.primary.main,
     textAlign: 'center',
-    padding: '20px 0'
+    padding: '20px 0',
+    marginLeft: '10%'
   }
 })
 
 export const PoweredBy = withStyles(powerThemes)((props) => {
   return (
-    <Typography component="p" className={props.classes.p}>
-      Powered by Simplex
-    </Typography>
+    <div className={props.classes.container}>
+      <div className={`iconLogo ${props.classes.logo}`} />
+      <Typography component="p" className={props.classes.p}>
+        Powered by Simplex
+      </Typography>
+    </div>
+
   )
 })
 
@@ -367,6 +382,9 @@ PaymentDetails.propTypes = {
 }
 
 const pendingStyles = theme => ({
+  progress: {
+    textAlign: 'center'
+  },
   info: {
     backgroundColor: '#fafafa',
     color: '#000',
@@ -385,7 +403,8 @@ class PendingSellUnstyled extends Component {
     super(props)
     this.state = {
       executionOrder: this.props.executionOrder,
-      displayConfirmDialog: false
+      displayConfirmDialog: false,
+      pending: false
     }
   }
   _cancel = async () => {
@@ -414,6 +433,7 @@ class PendingSellUnstyled extends Component {
     this.setState({displayConfirmDialog: true})
   }
   _sendFunds = async () => {
+    this.setState({pending: true})
     const executionOrder = this.state.executionOrder
     if (!executionOrder) {
       throw new Error('Could not find sendCrypto info')
@@ -436,8 +456,8 @@ class PendingSellUnstyled extends Component {
     } catch (e) {
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
-
-    this._refreshExecutionOrder(this.state.executionOrder.id)
+    await this._refreshExecutionOrder(this.state.executionOrder.id)
+    this.setState({pending: false})
   }
 
   render () {
@@ -464,7 +484,13 @@ class PendingSellUnstyled extends Component {
     }
     const executionOrder = this.state.executionOrder
     if (executionOrder) {
-      const body = getBody()
+      const body = this.state.pending
+        ? (
+          <div className={this.props.classes.progress}>
+            <CircularProgress />
+          </div>
+        )
+        : getBody()
       return (<div className={this.props.classes.info}>
         {this.state.displayConfirmDialog && <ConfirmDialog
           message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
