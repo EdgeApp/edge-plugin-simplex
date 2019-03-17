@@ -48,9 +48,8 @@ export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
 ]
 
 const edgeUrl = DEV
-  ? 'https://86555023.ngrok.io'
-  // ? 'https://simplex-sandbox-api.edgesecure.co'
-  : 'https://86555023.ngrok.io'
+  ? 'https://simplex-sandbox-api.edgesecure.co'
+  : 'https://simplex-sandbox-api.edgesecure.co'
 const simplexUrl = DEV
   // ? 'https://sandbox.test-simplexcc.com/payments/new'
   // : 'https://checkout.simplexcc.com/payments/new'

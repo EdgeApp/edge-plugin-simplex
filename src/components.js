@@ -430,20 +430,19 @@ class PendingSellUnstyled extends Component {
   }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
-    await core.chooseWallet([executionOrder.requested_digital_currency])
-    const wallet = await core.selectedWallet([executionOrder.requested_digital_currency])
     if (!executionOrder) {
       throw new Error('Could not find sendCrypto info')
     }
     const info = {
-      wallet,
+      currencyCode: executionOrder.requested_digital_currency,
       publicAddress: executionOrder.destination_crypto_address.trim(),
       nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
     }
     let tx
     try {
       if (!DEV) {
-        tx = await core.requestSpend(null, info.publicAddress, info.nativeAmount)
+        console.log(info)
+        tx = await window.edgeProvider.requestSpend([info])
       } else {
         tx = 'blockchain_txn_hash'
         console.log(info)
@@ -471,6 +470,7 @@ class PendingSellUnstyled extends Component {
         default: return (<div>
           <p>
             Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
+            {JSON.stringify(window.edgeProvider)}
           </p>
           <div>
             <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
