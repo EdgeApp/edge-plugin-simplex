@@ -433,7 +433,6 @@ class PendingSellUnstyled extends Component {
     this.setState({displayConfirmDialog: true})
   }
   _sendFunds = async () => {
-    this.setState({pending: true})
     const executionOrder = this.state.executionOrder
     if (!executionOrder) {
       throw new Error('Could not find sendCrypto info')
@@ -447,13 +446,16 @@ class PendingSellUnstyled extends Component {
     let edgeTransaction
     try {
       if (!DEV) {
+        await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
         edgeTransaction = await window.edgeProvider.requestSpend([info])
+        this.setState({pending: true})
       } else {
         edgeTransaction = {txid: 'blockchain_txn_hash'}
         console.log(info)
       }
-      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, edgeTransaction.txid)
+      await API.executionOrderNotifyStatus(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
     } catch (e) {
+      this.setState({pending: true})
       await API.executionOrderNotifyStatus(executionOrder, 'failed')
     }
     await this._refreshExecutionOrder(this.state.executionOrder.id)

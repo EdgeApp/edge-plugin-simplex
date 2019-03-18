@@ -324,6 +324,11 @@ class BuySellForm extends React.Component {
             </select>
           </Typography>
         )}
+        <Typography
+          component="h2"
+          className={classes.warning}>
+          Please note that at the moment only Visa cards issued in EU are supported. More options will be available soon.
+        </Typography>
         {!this.state.error && (
           <Card className={classes.card}>
             <CardContent>
