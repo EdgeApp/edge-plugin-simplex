@@ -55,7 +55,7 @@ class BuySellForm extends React.Component {
       .then((data) => {
         this.setState({
           wallets: data.filter((wallet) =>
-          this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
+            this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
         }, () => {
           if (this.state.wallets.length > 0) {
             let i = 0
@@ -307,7 +307,7 @@ class BuySellForm extends React.Component {
             acceptMsg={'Yes, start the process'}
             rejectMsg={'Cancel'}
             header={'Confirm Transaction Details'}
-            pendingMsg={'We are connecting to Simplex!'}
+            pendingMsg={'We are connecting to Simplex'}
             onAccept={this.handleAccept}
             onClose={this.handleClose}
           />
@@ -324,6 +324,11 @@ class BuySellForm extends React.Component {
             </select>
           </Typography>
         )}
+        <Typography
+          component="h2"
+          className={classes.warning}>
+          Please note that at the moment only Visa cards issued in EU are supported. More options will be available soon.
+        </Typography>
         {!this.state.error && (
           <Card className={classes.card}>
             <CardContent>

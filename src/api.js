@@ -9,7 +9,6 @@ export const PROVIDER = 'edge'
 export const API_VERSION = '1'
 export const ACCEPT_LANGUAGE = 'en-US;q=0.7,en;q=0.3'
 export const HTTP_ACCEPT = 'en-US;q=0.7,en;q=0.3'
-export const RETURN_URL = 'https://simplex-api.edgesecure.co/redirect/'
 export const LIMITS = {
   USD: {
     min: 50,
@@ -48,13 +47,12 @@ export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
 ]
 
 const edgeUrl = DEV
-  ? 'http://localhost:4000'
-  : 'http://localhost:4000'
+  ? 'https://simplex-sandbox-api.edgesecure.co'
+  : 'https://simplex-api.edgesecure.co'
 const simplexUrl = DEV
-  // ? 'https://sandbox.test-simplexcc.com/payments/new'
-  // : 'https://checkout.simplexcc.com/payments/new'
   ? 'https://sandbox.test-simplexcc.com/payments/new'
-  : 'https://sandbox.test-simplexcc.com/payments/new'
+  : 'https://checkout.simplexcc.com/payments/new'
+export const RETURN_URL = `${edgeUrl}/redirect/`
 
 export function sessionId () {
   return uuidv1()
@@ -209,7 +207,7 @@ export async function initiateSell (quote, refundAddress) {
       quote,
       refund_crypto_address: refundAddress,
       user_id: userId,
-      return_url: 'edge://plugin/simplex/sell'
+      return_url: RETURN_URL
     })
   }
   lastRequest = cancelableFetch(edgeUrl + '/sell/initiate/', data)

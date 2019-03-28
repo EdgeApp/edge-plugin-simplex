@@ -22,7 +22,8 @@ import './inline.css'
 const eventStyles = (theme) => ({
   paymentScene: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flexGrow: 1
   },
   h3: {
     color: theme.palette.primary.main,
@@ -34,7 +35,8 @@ const eventStyles = (theme) => ({
   card: {
     flex: '1 1 auto',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'scroll'
   }
 })
 
@@ -133,7 +135,7 @@ class TransactionsScene extends React.Component {
     return (
       <div className={this.props.classes.paymentScene}>
         <AppBar position="static">
-          <Tabs fullWidth indicatorColor={'white'} onChange={this._changeScreen} value={this.state.currentTab} >
+          <Tabs centered fullWidth indicatorColor={'white'} onChange={this._changeScreen} value={this.state.currentTab} >
             <Tab label={'Buy Crypto'}/>
             <Tab label={'Sell Crypto'}/>
           </Tabs>

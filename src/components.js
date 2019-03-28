@@ -15,7 +15,7 @@ import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './ut
 import moment from 'moment'
 
 import * as API from './api'
-import { ui, core } from 'edge-libplugin'
+import { ui } from 'edge-libplugin'
 
 const limitStyles = theme => ({
   p: {
@@ -83,7 +83,7 @@ export const SupportLink = (props) => {
 const supportThemes = theme => ({
   p: {
     textAlign: 'center',
-    padding: '0 0 20px 0'
+    padding: '10px 0'
   }
 })
 
@@ -100,19 +100,34 @@ Support.propTypes = {
 }
 
 const powerThemes = (theme) => ({
+  container: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#d9e3ec'
+  },
+  logo: {
+    height: '30px',
+    padding: 0,
+    margin: 0
+  },
   p: {
-    backgroundColor: '#d9e3ec',
     fontColor: theme.palette.primary.main,
     textAlign: 'center',
-    padding: '20px 0'
+    padding: '20px 0',
+    marginLeft: '10%'
   }
 })
 
 export const PoweredBy = withStyles(powerThemes)((props) => {
   return (
-    <Typography component="p" className={props.classes.p}>
-      Powered by Simplex
-    </Typography>
+    <div className={props.classes.container}>
+      <div className={`iconLogo ${props.classes.logo}`} />
+      <Typography component="p" className={props.classes.p}>
+        Powered by Simplex
+      </Typography>
+    </div>
+
   )
 })
 
@@ -367,6 +382,9 @@ PaymentDetails.propTypes = {
 }
 
 const pendingStyles = theme => ({
+  progress: {
+    textAlign: 'center'
+  },
   info: {
     backgroundColor: '#fafafa',
     color: '#000',
@@ -385,7 +403,8 @@ class PendingSellUnstyled extends Component {
     super(props)
     this.state = {
       executionOrder: this.props.executionOrder,
-      displayConfirmDialog: false
+      displayConfirmDialog: false,
+      pending: false
     }
   }
   _cancel = async () => {
@@ -419,23 +438,28 @@ class PendingSellUnstyled extends Component {
       throw new Error('Could not find sendCrypto info')
     }
     const info = {
-      currencyCode: executionOrder.crypto_currency,
+      currencyCode: executionOrder.requested_digital_currency,
       publicAddress: executionOrder.destination_crypto_address.trim(),
-      nativeAmount: Math.round(executionOrder.requested_digital_amount).toString() // simplex amount in satoshi already
-    }
-    let tx
-    try {
-      if (!DEV) {
-        tx = await core.makeSpendRequest(info)
-      } else {
-        tx = 'blockchain_txn_hash'
-      }
-      await API.executionOrderNotifyStatus(executionOrder, 'completed', info.nativeAmount, tx)
-    } catch (e) {
-      await API.executionOrderNotifyStatus(executionOrder, 'failed')
+      nativeAmount: Math.round(executionOrder.requested_digital_amount * 100).toString() // simplex amount in MicroBit
     }
 
-    this._refreshExecutionOrder(this.state.executionOrder.id)
+    let edgeTransaction
+    try {
+      if (!DEV) {
+        await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
+        edgeTransaction = await window.edgeProvider.requestSpend([info])
+        this.setState({pending: true})
+      } else {
+        edgeTransaction = {txid: 'blockchain_txn_hash'}
+        console.log(info)
+      }
+      await API.executionOrderNotifyStatus(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
+    } catch (e) {
+      this.setState({pending: true})
+      await API.executionOrderNotifyStatus(executionOrder, 'failed')
+    }
+    await this._refreshExecutionOrder(this.state.executionOrder.id)
+    this.setState({pending: false})
   }
 
   render () {
@@ -462,7 +486,13 @@ class PendingSellUnstyled extends Component {
     }
     const executionOrder = this.state.executionOrder
     if (executionOrder) {
-      const body = getBody()
+      const body = this.state.pending
+        ? (
+          <div className={this.props.classes.progress}>
+            <CircularProgress />
+          </div>
+        )
+        : getBody()
       return (<div className={this.props.classes.info}>
         {this.state.displayConfirmDialog && <ConfirmDialog
           message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
