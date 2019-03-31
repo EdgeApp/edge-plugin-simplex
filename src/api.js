@@ -4,6 +4,7 @@ import uuidv1 from 'uuid/v1'
 import { core } from 'edge-libplugin'
 
 import { DEV, cancelableFetch } from './utils'
+import { edgeUrl, simplexUrl } from './config'
 
 export const PROVIDER = 'edge'
 export const API_VERSION = '1'
@@ -46,12 +47,6 @@ export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
   'BTC'
 ]
 
-const edgeUrl = DEV
-  ? 'https://simplex-sandbox-api.edgesecure.co'
-  : 'https://simplex-api.edgesecure.co'
-const simplexUrl = DEV
-  ? 'https://sandbox.test-simplexcc.com/payments/new'
-  : 'https://checkout.simplexcc.com/payments/new'
 export const RETURN_URL = `${edgeUrl}/redirect/`
 
 export function sessionId () {
