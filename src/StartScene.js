@@ -1,15 +1,16 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Divider from 'material-ui/Divider'
-import Typography from 'material-ui/Typography'
-import Grid from 'material-ui/Grid'
-import { ui } from 'edge-libplugin'
-import * as API from './api'
-
 import './inline.css'
 
-import { EdgeButton, SupportLink, PendingSell } from './components'
+import * as API from './api'
+
+import { EdgeButton, PendingSell, SupportLink } from './components'
+
+import Divider from 'material-ui/Divider'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import React from 'react'
+import Typography from 'material-ui/Typography'
+// import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 const startStyles = (theme) => ({
   container: {
@@ -67,13 +68,13 @@ class StartScene extends React.Component {
     }
   }
   UNSAFE_componentWillMount () {
-    ui.title('Buy with Simplex')
+    // ui.title('Buy with Simplex')
     window.scrollTo(0, 0)
     window.localStorage.removeItem('last_crypto_amount')
     window.localStorage.removeItem('last_fiat_amount')
   }
   componentDidMount () {
-    this._fetchPendingExecutionOrders()
+    // this._fetchPendingExecutionOrders()
   }
   async _fetchPendingExecutionOrders () {
     const data = await API.getPendingExecutionOrders()

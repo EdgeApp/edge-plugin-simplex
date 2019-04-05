@@ -1,22 +1,23 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography'
-import Card, { CardContent } from 'material-ui/Card'
-import Grid from 'material-ui/Grid'
-import { CircularProgress } from 'material-ui/Progress'
-import { ui } from 'edge-libplugin'
-import moment from 'moment'
+import './inline.css'
 
 import * as API from './api'
-import { formatStatus } from './utils'
+
+import Card, { CardContent } from 'material-ui/Card'
 import {
   PaymentDetails,
-  Support,
-  PoweredBy
+  PoweredBy,
+  Support
 } from './components'
 
-import './inline.css'
+import { CircularProgress } from 'material-ui/Progress'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import React from 'react'
+import Typography from 'material-ui/Typography'
+import { formatStatus } from './utils'
+import moment from 'moment'
+// import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 const eventStyles = (theme) => ({
   eventScene: {
@@ -49,9 +50,9 @@ class EventsScene extends React.Component {
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    ui.title('Payment History')
+    // ui.title('Payment History')
     this.loadEvents()
   }
 

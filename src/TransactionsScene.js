@@ -1,23 +1,25 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography'
-import Card, { CardContent } from 'material-ui/Card'
-import AppBar from 'material-ui/AppBar'
-import Tabs from 'material-ui/Tabs/Tabs'
-import Tab from 'material-ui/Tabs/Tab'
-import Grid from 'material-ui/Grid'
-import { CircularProgress } from 'material-ui/Progress'
-import { ui } from 'edge-libplugin'
+import './inline.css'
 
 import * as API from './api'
+
+import Card, { CardContent } from 'material-ui/Card'
 import {
-  TransactionRow,
+  PoweredBy,
   Support,
-  PoweredBy
+  TransactionRow
 } from './components'
 
-import './inline.css'
+import AppBar from 'material-ui/AppBar'
+import { CircularProgress } from 'material-ui/Progress'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import React from 'react'
+import Tab from 'material-ui/Tabs/Tab'
+import Tabs from 'material-ui/Tabs/Tabs'
+import Typography from 'material-ui/Typography'
+import { withStyles } from 'material-ui/styles'
+
+// import { ui } from 'edge-libplugin'
 
 const eventStyles = (theme) => ({
   paymentScene: {
@@ -50,9 +52,9 @@ class TransactionsScene extends React.Component {
     }
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    ui.title('Transactions')
+    // ui.title('Transactions')
     this.loadTransactions(this.getTransactionType(this.state.currentTab))
   }
 

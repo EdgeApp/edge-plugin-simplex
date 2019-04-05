@@ -1,4 +1,4 @@
-import { core } from 'edge-libplugin'
+// import { core } from 'edge-libplugin'
 
 export const DEV = process.env.NODE_ENV === 'development'
 
@@ -90,7 +90,7 @@ export const describeSpend = (executionOrder) => {
 export async function retrieveAddress (walletId, currencyCode) {
   let address = null
   if (!DEV) {
-    const addressData = await core.getAddress(walletId, currencyCode)
+    const addressData = await window.edgeProvider.getAddress({walletId, currencyCode})
     address = addressData.address.legacyAddress
     if (!address) {
       address = addressData.address.publicAddress

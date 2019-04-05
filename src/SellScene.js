@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types'
+import * as API from './api'
+
+import {DEV, convertToMillionsUnits, formatAmount, retrieveAddress} from './utils'
 import React, { Component } from 'react'
 
-import {DEV, retrieveAddress, convertToMillionsUnits, formatAmount} from './utils'
-import * as API from './api'
 import BuySellForm from './BuySellForm'
+import PropTypes from 'prop-types'
 
 const formatResponse = async (res, wallet, valueType, value, cryptoCode, fiatCode) => {
   if (!res.quote_id) {
@@ -28,14 +29,13 @@ const formatResponse = async (res, wallet, valueType, value, cryptoCode, fiatCod
     crypto_amount: cryptoAmount,
     refund_address: address
   }
-  console.log(quote)
   return {quote, rate}
 }
 
 class SellScene extends Component {
   constructor (props) {
     super(props)
-
+    console.log('DEV', !DEV)
     this.wallets = !DEV
       ? []
       : [
@@ -46,7 +46,6 @@ class SellScene extends Component {
   }
 
   requestFiatQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
-    console.log(value + ' ' + cryptoCode + ' ' + fiatCode)
     const data = await API.requestSellQuote({
       base_currency: cryptoCode, base_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
@@ -55,6 +54,7 @@ class SellScene extends Component {
   }
 
   requestCryptoQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
+    console.log('requestCryptoQuote')
     const data = await API.requestSellQuote({
       base_currency: cryptoCode, quote_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
@@ -63,7 +63,9 @@ class SellScene extends Component {
   }
 
   handleAccept = async (uaid, quote) => {
+    console.log('handleAccept Sell Scene')
     const data = await API.initiateSell(quote, quote.refund_address)
+
     const transaction = await data.json()
     if (transaction.err) {
       throw new Error(transaction.err)

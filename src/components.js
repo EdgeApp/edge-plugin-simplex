@@ -1,21 +1,22 @@
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import { withStyles } from 'material-ui/styles'
-import Button from 'material-ui/Button'
-import Typography from 'material-ui/Typography'
-import Grid from 'material-ui/Grid'
-import Drawer from 'material-ui/Drawer'
+import * as API from './api'
+
+import { DEV, describeSpend, formatAmount, formatRate, formatStatus } from './utils'
 import Dialog, {
   DialogContent,
   DialogContentText,
   DialogTitle
 } from 'material-ui/Dialog'
-import { CircularProgress } from 'material-ui/Progress'
-import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './utils'
-import moment from 'moment'
+import React, { Component } from 'react'
 
-import * as API from './api'
-import { ui } from 'edge-libplugin'
+import Button from 'material-ui/Button'
+import { CircularProgress } from 'material-ui/Progress'
+import Drawer from 'material-ui/Drawer'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import Typography from 'material-ui/Typography'
+import moment from 'moment'
+// import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 const limitStyles = theme => ({
   p: {
@@ -414,7 +415,7 @@ class PendingSellUnstyled extends Component {
     try {
       await API.executionOrderNotifyStatus(this.state.executionOrder, 'cancelled')
     } catch (e) {
-      ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
+      // ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
     }
     this._refreshExecutionOrder(this.state.executionOrder.id)
     this._closeDialog()

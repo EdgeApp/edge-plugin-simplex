@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import uuidv1 from 'uuid/v1'
-import { core } from 'edge-libplugin'
-
 import { DEV, cancelableFetch } from './utils'
 import { edgeUrl, simplexUrl } from './config'
+
+import PropTypes from 'prop-types'
+import React from 'react'
+// import { core } from 'edge-libplugin'
+import uuidv1 from 'uuid/v1'
 
 export const PROVIDER = 'edge'
 export const API_VERSION = '1'
@@ -54,31 +54,44 @@ export function sessionId () {
 }
 
 export async function getUserId () {
+  console.log('Get User id')
   if (DEV) {
     return 'dev-user-id'
   }
   let id = null
   let inCore = true
   try {
-    id = await core.readData('simplex_user_id')
-    core.debugLevel(0, 'Found user key in core')
+    const response = await window.edgeProvider.readData(['simplex_user_id'])
+    if (response['simplex_user_id']) {
+      console.log('GOT id ', id)
+      id = response['simplex_user_id']
+    } else {
+      inCore = false
+    }
+    // core.debugLevel(0, 'Found user key in core')
   } catch (e) {
-    core.debugLevel(0, 'No existing key in core')
+    // core.debugLevel(0, 'No existing key in core')
+    console.log('No existing key in core')
     inCore = false
   }
   if (!id) {
     id = window.localStorage.getItem('simplex_user_id')
   }
+  console.log('still no id')
   if (!id) {
     id = uuidv1()
-    core.debugLevel(0, 'Generating id "' + id + "' ")
+    console.log('Generating id "' + id + "' ")
+    // core.debugLevel(0, 'Generating id "' + id + "' ")
   }
   if (!inCore) {
     try {
-      await core.writeData('simplex_user_id', id)
-      core.debugLevel(0, 'Wrote key to core')
+      console.log('Write the data  id "' + id + "' ")
+      await window.edgeProvider.writeData('simplex_user_id', id)
+      console.log('Finished awaiting the writing. ')
+      // core.debugLevel(0, 'Wrote key to core')
     } catch (e) {
-      core.debugLevel(0, 'Unable to write key to core. Storing in localStorage')
+      console.log('Error here writing. ')
+      // core.debugLevel(0, 'Unable to write key to core. Storing in localStorage')
       window.localStorage.setItem('simplex_user_id', id)
     }
   }
@@ -191,7 +204,9 @@ export async function requestSellQuote (params) {
 
 export async function initiateSell (quote, refundAddress) {
   requestAbort()
+  console.log('initialQuote', quote)
   const userId = await getUserId()
+  console.log('user Id ', userId)
   const data = {
     method: 'POST',
     headers: {

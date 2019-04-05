@@ -1,26 +1,27 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Card, { CardContent } from 'material-ui/Card'
-import TextField from 'material-ui/TextField'
-import { InputAdornment } from 'material-ui/Input'
-import Typography from 'material-ui/Typography'
-import { CircularProgress } from 'material-ui/Progress'
-import uuidv1 from 'uuid/v1'
-import { core, ui } from 'edge-libplugin'
+import './inline.css'
 
 import * as API from './api'
-import { DEV, formatRate } from './utils'
+
+import Card, { CardContent } from 'material-ui/Card'
 import {
+  ConfirmDialog,
   DailyLimit,
   EdgeButton,
-  ConfirmDialog,
-  Support,
   PoweredBy,
+  Support,
   WalletDrawer
 } from './components'
+import { DEV, formatRate } from './utils'
 
-import './inline.css'
+import { CircularProgress } from 'material-ui/Progress'
+import { InputAdornment } from 'material-ui/Input'
+import PropTypes from 'prop-types'
+import React from 'react'
+import TextField from 'material-ui/TextField'
+import Typography from 'material-ui/Typography'
+// import { ui } from 'edge-libplugin'
+import uuidv1 from 'uuid/v1'
+import { withStyles } from 'material-ui/styles'
 
 const setFiatInput = (value) => {
   setDomValue('fiatInput', value)
@@ -42,7 +43,7 @@ const buildObject = async (res, wallet) => {
   }
   let address = null
   if (!DEV) {
-    const addressData = await core.getAddress(wallet.id, wallet.currencyCode)
+    const addressData = await window.edgeProvider.getAddress({walletId: wallet.id, currencyCode: wallet.currencyCode})
     if (wallet.currencyCode === 'BCH') {
       address = addressData.address.publicAddress
     } else {
@@ -148,7 +149,7 @@ class BuyScene extends React.Component {
   }
 
   loadWallets = () => {
-    core.wallets()
+    window.edgeProvider.wallets()
       .then((data) => {
         this.setState({
           wallets: data.filter((wallet) =>
@@ -174,8 +175,8 @@ class BuyScene extends React.Component {
         })
       })
       .catch(() => {
-        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
-        ui.exit()
+        // ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
+        // ui.exit()
       })
   }
 
@@ -186,8 +187,8 @@ class BuyScene extends React.Component {
       .then(r => buildObject(r.res, this.state.selectedWallet))
       .then(r => this.setState({rate: r.rate}))
       .catch(() => {
-        ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
-        ui.exit()
+        // ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
+        // ui.exit()
       })
   }
 
@@ -281,7 +282,7 @@ class BuyScene extends React.Component {
       window.localStorage.removeItem('last_crypto_amount')
       window.localStorage.removeItem('last_fiat_amount')
     })
-    ui.title(`Buy ${wallet.currencyCode}`)
+    // ui.title(`Buy ${wallet.currencyCode}`)
     window.localStorage.setItem('last_wallet', wallet.id)
   }
 
@@ -307,7 +308,8 @@ class BuyScene extends React.Component {
           setFiatInput(r.quote.fiat_amount)
         })
         .catch(err => {
-          core.debugLevel(0, JSON.stringify(err))
+          console.log(err)
+          // core.debugLevel(0, JSON.stringify(err))
         })
     } else {
       API.requestAbort()
@@ -343,7 +345,8 @@ class BuyScene extends React.Component {
           setCryptoInput(r.quote.digital_amount)
         })
         .catch(err => {
-          core.debugLevel(0, JSON.stringify(err))
+          console.log(err)
+          // core.debugLevel(0, JSON.stringify(err))
         })
     } else {
       API.requestAbort()
@@ -395,20 +398,20 @@ class BuyScene extends React.Component {
         )}
         {selectedWallet && !fiatSupport && (
           <Typography
-            component="h2"
+            component='h2'
             className={classes.warning}>
             Please note that {selectedWallet.fiatCurrencyCode} is not supported by Simplex.
             Defaulting to
             <select defaultValue={fiat} onChange={this.changeDefaultFiat}>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value='USD'>USD</option>
+              <option value='EUR'>EUR</option>
             </select>
           </Typography>
         )}
         <Card className={classes.card}>
           <CardContent>
             <Typography
-              component="h3"
+              component='h3'
               className={classes.h3}>
               Conversion Rate
             </Typography>
@@ -416,7 +419,7 @@ class BuyScene extends React.Component {
               <CircularProgress size={25} />
             )}
             {this.state.rate && (
-              <Typography component="p" className={classes.conversion}>
+              <Typography component='p' className={classes.conversion}>
                 1{this.state.rate.currency} = {formatRate(this.state.rate.rate, fiat)}
               </Typography>
             )}
@@ -426,15 +429,15 @@ class BuyScene extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Typography
-              variant="headline"
-              component="h3"
+              variant='headline'
+              component='h3'
               className={classes.h3}>
               Destination Wallet
               {this.state.selectedWallet && (
                 <span>: {this.state.selectedWallet.name}</span>
               )}
             </Typography>
-            <EdgeButton color="primary" onClick={this.openWallets}>
+            <EdgeButton color='primary' onClick={this.openWallets}>
               Change Destination Wallet
             </EdgeButton>
           </CardContent>
@@ -443,14 +446,14 @@ class BuyScene extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Typography
-              variant="headline"
-              component="h3"
+              variant='headline'
+              component='h3'
               className={classes.h3}>
               Purchase Amount
             </Typography>
 
-            <TextField id="cryptoInput" type="number" label="Enter Amount"
-              margin="none" fullWidth
+            <TextField id='cryptoInput' type='number' label='Enter Amount'
+              margin='none' fullWidth
               disabled={this.state.cryptoLoading}
               InputLabelProps={{
                 shrink: true
@@ -458,7 +461,7 @@ class BuyScene extends React.Component {
               tabIndex={1}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">
+                  <InputAdornment position='end'>
                     {this.state.cryptoLoading && <CircularProgress size={25} />}
                     {!this.state.cryptoLoading && selectedWallet && this.state.selectedWallet.currencyCode}
                   </InputAdornment>)
@@ -466,9 +469,9 @@ class BuyScene extends React.Component {
               onChange={this.calcFiat}
             />
 
-            <TextField id="fiatInput" type="number" label="Enter Amount"
+            <TextField id='fiatInput' type='number' label='Enter Amount'
               {...errors}
-              margin="none" fullWidth
+              margin='none' fullWidth
               disabled={this.state.fiatLoading}
               InputLabelProps={{
                 shrink: true
@@ -476,7 +479,7 @@ class BuyScene extends React.Component {
               tabIndex={2}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">
+                  <InputAdornment position='end'>
                     {this.state.fiatLoading && <CircularProgress size={25} />}
                     {!this.state.fiatLoading && fiat}
                   </InputAdornment>)
@@ -493,18 +496,18 @@ class BuyScene extends React.Component {
 
         <Card className={classes.card}>
           <CardContent>
-            <Typography component="p" className={classes.p}>
+            <Typography component='p' className={classes.p}>
               You will see a confirmation screen before you buy.
             </Typography>
             {quote && quote.address && (
-              <p style={{textAlign: "center", maxWidth: "100%", wordWrap: "break-word", overflowWrap: "break-word", flexWrap: "wrap"}} component="p">
+              <p style={{textAlign: 'center', maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap'}} component='p'>
                 Payment will be sent to<br />
-                <strong style={{maxWidth: "100%", wordWrap: "break-word", overflowWrap: "break-word", flexWrap: "wrap"}} className={classes.address}>{quote.address}</strong>
+                <strong style={{maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap'}} className={classes.address}>{quote.address}</strong>
               </p>
             )}
             <EdgeButton
               tabIndex={3}
-              color="primary"
+              color='primary'
               onClick={this.next}
               disabled={quote === null || errors.error}>
               Next

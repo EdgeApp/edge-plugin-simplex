@@ -1,26 +1,27 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Card, { CardContent } from 'material-ui/Card'
-import TextField from 'material-ui/TextField'
-import { InputAdornment } from 'material-ui/Input'
-import Typography from 'material-ui/Typography'
-import { CircularProgress } from 'material-ui/Progress'
-import { core, ui } from 'edge-libplugin'
+import './inline.css'
 
 import * as API from './api'
-import { formatRate, setFiatInput, setCryptoInput } from './utils'
+
+import Card, { CardContent } from 'material-ui/Card'
 import {
+  ConfirmDialog,
   DailyLimit,
   EdgeButton,
-  ConfirmDialog,
-  Support,
   PoweredBy,
+  Support,
   WalletDrawer
 } from './components'
+import { formatRate, setCryptoInput, setFiatInput } from './utils'
 
-import './inline.css'
+import { CircularProgress } from 'material-ui/Progress'
+import { InputAdornment } from 'material-ui/Input'
+import PropTypes from 'prop-types'
+import React from 'react'
+import TextField from 'material-ui/TextField'
+import Typography from 'material-ui/Typography'
 import styles from './FormStyles'
+// import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 class BuySellForm extends React.Component {
   constructor (props) {
@@ -49,39 +50,47 @@ class BuySellForm extends React.Component {
     }
     this.loadWallets()
   }
-
+  objectToArray = (obj) => {
+    const array = []
+    for (const key in obj) {
+      array.push(obj[key])
+    }
+    return array
+  }
   loadWallets = () => {
-    core.wallets()
+    console.log('loadWallets v5')
+    const lastWallet = window.localStorage.getItem('last_wallet')
+    console.log('last wallet', lastWallet)
+    console.log('Supported currencies ', this.props.supported_digital_currencies)
+    // const bob = window.edgeProvider
+    window.edgeProvider.wallets(this.props.supported_digital_currencies)
       .then((data) => {
+        console.log('got data ', data)
+        if (lastWallet) {
+          console.log('last wallet')
+          this.selectWallet(data[lastWallet])
+          return
+        }
+        console.log('No Wallet')
         this.setState({
-          wallets: data.filter((wallet) =>
-            this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
+          wallets: this.objectToArray(data)
         }, () => {
           if (this.state.wallets.length > 0) {
-            let i = 0
-            const lastWallet = window.localStorage.getItem('last_wallet')
-            if (lastWallet) {
-              for (; i < this.state.wallets.length; ++i) {
-                if (this.state.wallets[i].id === lastWallet) {
-                  break
-                }
-              }
-              if (i >= this.state.wallets.length) {
-                i = 0
-              }
-            }
-            this.selectWallet(this.state.wallets[i])
+            console.log('get some more')
+            this.selectWallet(this.state.wallets[0])
           } else {
             // Probably exit...not available wallets
+            console.log('NOda .. whoops. ')
           }
         })
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log('wallets error', e)
         this.setState({
           error: 'Unable to fetch wallets. Please try again later.'
         })
-        ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
-        ui.exit()
+        // ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
+        // ui.exit()
       })
   }
 
@@ -95,8 +104,8 @@ class BuySellForm extends React.Component {
       this.setState({
         error: 'Unable to retrieve rates. Please try again later.'
       })
-      ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
-      ui.exit()
+      // ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
+      // ui.exit()
     }
   }
 
@@ -123,6 +132,7 @@ class BuySellForm extends React.Component {
   }
 
   closeWallets = () => {
+    console.log('closeWallets')
     this.setState({
       drawerOpen: false
     })
@@ -142,7 +152,9 @@ class BuySellForm extends React.Component {
   }
 
   selectWallet = (wallet) => {
+    console.log('selectWallet', wallet)
     if (!wallet || !wallet.id) {
+      console.log('NO F n  wallet')
       return
     }
     /* Check if this wallets fiat currency is supported */
@@ -161,12 +173,15 @@ class BuySellForm extends React.Component {
       const lastCrypto = window.localStorage.getItem('last_crypto_amount')
       const lastFiat = window.localStorage.getItem('last_fiat_amount')
       if (lastCrypto) {
+        console.log('lastCrypto', lastCrypto)
         setCryptoInput(lastCrypto)
         this.calcFiat({target: {value: lastCrypto}})
       } else if (lastFiat) {
+        console.log('lastFiat', lastFiat)
         setFiatInput(lastFiat)
         this.calcCrypto({target: {value: lastFiat}})
       } else {
+        console.log('NADA')
         setFiatInput('')
         setCryptoInput('')
         this.loadConversion()
@@ -174,11 +189,12 @@ class BuySellForm extends React.Component {
       window.localStorage.removeItem('last_crypto_amount')
       window.localStorage.removeItem('last_fiat_amount')
     })
-    ui.title(`Sell ${wallet.currencyCode}`)
+    // ui.title(`Sell ${wallet.currencyCode}`)
     window.localStorage.setItem('last_wallet', wallet.id)
   }
 
   calcFiat = async (event) => {
+    console.log('calcFiat')
     window.localStorage.setItem('last_crypto_amount', event.target.value)
     window.localStorage.removeItem('last_fiat_amount')
     if (event.target.value && event.target.value > 0) {
@@ -217,6 +233,7 @@ class BuySellForm extends React.Component {
   }
 
   calcCrypto = async (event) => {
+    console.log('calcCrypto')
     window.localStorage.setItem('last_fiat_amount', event.target.value)
     window.localStorage.removeItem('last_crypto_amount')
     if (event.target.value && event.target.value > 0) {
