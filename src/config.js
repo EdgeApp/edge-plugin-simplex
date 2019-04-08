@@ -1,4 +1,4 @@
-const SANDBOX = true
+const SANDBOX = false
 
 export const edgeUrl = SANDBOX
   ? 'https://simplex-sandbox-api.edgesecure.co'
