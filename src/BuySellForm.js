@@ -9,7 +9,7 @@ import { CircularProgress } from 'material-ui/Progress'
 import { core, ui } from 'edge-libplugin'
 
 import * as API from './api'
-import { formatRate, setFiatInput, setCryptoInput } from './utils'
+import { formatRate, setFiatInput, setCryptoInput, convertFromMillionsUnits } from './utils'
 import {
   DailyLimit,
   EdgeButton,
@@ -92,11 +92,7 @@ class BuySellForm extends React.Component {
       const fiatQuote = await this.props.requestFiatQuote(cryptoAmount, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
       this.setState({rate: fiatQuote.rate})
     } catch (err) {
-      this.setState({
-        error: 'Unable to retrieve rates. Please try again later.'
-      })
-      ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
-      ui.exit()
+      this.errorHandler(err)
     }
   }
 
@@ -199,10 +195,7 @@ class BuySellForm extends React.Component {
         })
         setFiatInput(fiatQuote.quote.fiat_amount)
       } catch (err) {
-        console.log(err)
-        this.setState({
-          error: 'Unable to retrieve rates. Please try again later.'
-        })
+        this.errorHandler(err)
       }
     } else {
       API.requestAbort()
@@ -237,10 +230,7 @@ class BuySellForm extends React.Component {
         })
         setCryptoInput(r.quote.crypto_amount)
       } catch (err) {
-        console.log(err)
-        this.setState({
-          error: 'Unable to calculate conversion rate. Please try again later.'
-        })
+        this.errorHandler(err)
       }
     } else {
       API.requestAbort()
@@ -253,19 +243,34 @@ class BuySellForm extends React.Component {
       })
     }
   }
+  errorHandler = e => {
+    console.log(e)
+    let errorMessage
+    try {
+      const error = JSON.parse(e.message)
+      if (error.code === 'user_limit_exceeded') {
+        errorMessage = 'Sorry, you have exceeded your limit, please try again tomorrow.'
+      } else if (error.code === 'amounts_too_small') {
+        const {limit_amount: limitAmount, currency} = error.params
+        errorMessage = `Amount is too small, should be at least ${convertFromMillionsUnits(limitAmount)} ${currency} or more.`
+      }
+    } catch (e) {
+      errorMessage = 'Unable to proceed. Please try again later.'
+    }
+    this.setState({
+      error: errorMessage,
+      quote: null
+    })
+    setFiatInput('')
+    setCryptoInput('')
+  }
 
   handleAccept = async () => {
     try {
       await this.props.handleAccept(this.uaid, this.state.quote)
       this.setState({error: null})
-    } catch (err) {
-      this.setState({
-        error: 'Unable to proceed. Please try again later.',
-        quote: null
-      })
-      setFiatInput('')
-      setCryptoInput('')
-      this.loadConversion()
+    } catch (e) {
+      this.errorHandler(e)
     }
   }
 
@@ -342,7 +347,7 @@ class BuySellForm extends React.Component {
               )}
               {this.state.rate && (
                 <Typography component="p" className={classes.conversion}>
-                  1{this.state.selectedWallet.currencyCode} = {this.state.rate} {fiat}
+                  1 {this.state.selectedWallet.currencyCode} = {this.state.rate} {fiat}
                 </Typography>
               )}
             </CardContent>
@@ -405,8 +410,8 @@ class BuySellForm extends React.Component {
 
             <DailyLimit
               fiat={fiat}
-              dailyLimit={API.LIMITS[fiat].daily}
-              monthlyLimit={API.LIMITS[fiat].monthly} />
+              dailyLimit={API.SELL_LIMITS[fiat].daily}
+              monthlyLimit={API.SELL_LIMITS[fiat].monthly} />
           </CardContent>
         </Card>
 

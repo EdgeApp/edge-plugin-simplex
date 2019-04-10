@@ -22,6 +22,13 @@ export const LIMITS = {
     monthly: 42431
   }
 }
+export const SELL_LIMITS = {
+  EUR: {
+    min: 50,
+    daily: 4400,
+    monthly: 8800
+  }
+}
 
 let lastRequest = null
 
