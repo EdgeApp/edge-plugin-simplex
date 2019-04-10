@@ -5,7 +5,11 @@ import {DEV, retrieveAddress, convertToMillionsUnits, formatAmount} from './util
 import * as API from './api'
 import BuySellForm from './BuySellForm'
 
-const formatResponse = async (res, wallet, valueType, value, cryptoCode, fiatCode) => {
+const formatResponse = async (response, wallet, valueType, value, cryptoCode, fiatCode) => {
+  const {res, err} = response
+  if (err) {
+    throw new Error(err)
+  }
   if (!res.quote_id) {
     throw new Error('Invalid response')
   }
@@ -51,7 +55,7 @@ class SellScene extends Component {
       base_currency: cryptoCode, base_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
     const r = await data.json()
-    return formatResponse(r.res, selectedWallet, 'crypto', value, cryptoCode, fiatCode)
+    return formatResponse(r, selectedWallet, 'crypto', value, cryptoCode, fiatCode)
   }
 
   requestCryptoQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
@@ -59,7 +63,7 @@ class SellScene extends Component {
       base_currency: cryptoCode, quote_amount: convertToMillionsUnits(value), quote_currency: fiatCode
     })
     const r = await data.json()
-    return formatResponse(r.res, selectedWallet, 'fiat', value, cryptoCode, fiatCode)
+    return formatResponse(r, selectedWallet, 'fiat', value, cryptoCode, fiatCode)
   }
 
   handleAccept = async (uaid, quote) => {
