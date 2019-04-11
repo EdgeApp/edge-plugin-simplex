@@ -1,26 +1,27 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Card, { CardContent } from 'material-ui/Card'
-import TextField from 'material-ui/TextField'
-import { InputAdornment } from 'material-ui/Input'
-import Typography from 'material-ui/Typography'
-import { CircularProgress } from 'material-ui/Progress'
-import { core, ui } from 'edge-libplugin'
+import './inline.css'
 
 import * as API from './api'
-import { formatRate, setFiatInput, setCryptoInput, convertFromMillionsUnits } from './utils'
+
+import Card, { CardContent } from 'material-ui/Card'
 import {
+  ConfirmDialog,
   DailyLimit,
   EdgeButton,
-  ConfirmDialog,
-  Support,
   PoweredBy,
+  Support,
   WalletDrawer
 } from './components'
+import { convertFromMillionsUnits, formatRate, setCryptoInput, setFiatInput } from './utils'
+import { core, ui } from 'edge-libplugin'
 
-import './inline.css'
+import { CircularProgress } from 'material-ui/Progress'
+import { InputAdornment } from 'material-ui/Input'
+import PropTypes from 'prop-types'
+import React from 'react'
+import TextField from 'material-ui/TextField'
+import Typography from 'material-ui/Typography'
 import styles from './FormStyles'
+import { withStyles } from 'material-ui/styles'
 
 class BuySellForm extends React.Component {
   constructor (props) {
@@ -81,7 +82,7 @@ class BuySellForm extends React.Component {
           error: 'Unable to fetch wallets. Please try again later.'
         })
         ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
-        ui.exit()
+        // ui.exit()
       })
   }
 

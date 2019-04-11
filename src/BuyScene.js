@@ -163,7 +163,7 @@ class BuyScene extends React.Component {
       })
       .catch(() => {
         ui.showAlert(false, 'Error', 'Unable to fetch wallets. Please try again later.')
-        ui.exit()
+        // ui.exit()
       })
   }
 
@@ -175,7 +175,7 @@ class BuyScene extends React.Component {
       .then(r => this.setState({rate: r.rate}))
       .catch(() => {
         ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
-        ui.exit()
+        // ui.exit()
       })
   }
 
