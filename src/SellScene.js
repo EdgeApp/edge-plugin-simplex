@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-
-import {DEV, retrieveAddress, convertToMillionsUnits, formatAmount} from './utils'
 import * as API from './api'
+
+import React, { Component } from 'react'
+import { convertToMillionsUnits, formatAmount, retrieveAddress } from './utils'
+
 import BuySellForm from './BuySellForm'
+import PropTypes from 'prop-types'
 
 const formatResponse = async (response, wallet, valueType, value, cryptoCode, fiatCode) => {
   const {res, err} = response
@@ -40,13 +41,7 @@ class SellScene extends Component {
   constructor (props) {
     super(props)
 
-    this.wallets = !DEV
-      ? []
-      : [
-        {id: 'BTC', name: 'BTC', currencyCode: 'BTC', fiatCurrencyCode: 'USD'},
-        {id: 'BTC-EUR', name: 'BTC-EUR', currencyCode: 'BTC', fiatCurrencyCode: 'EUR'},
-        {id: 'BTC-MXN', name: 'BTC-MXN', currencyCode: 'BTC', fiatCurrencyCode: 'MXN'}
-      ]
+    this.wallets = []
   }
 
   requestFiatQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {

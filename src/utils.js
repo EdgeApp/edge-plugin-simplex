@@ -1,7 +1,5 @@
 import { core } from 'edge-libplugin'
 
-export const DEV = process.env.NODE_ENV === 'development'
-
 export function formatRate (rate, currency) {
   if (!rate) {
     return ''
@@ -89,14 +87,10 @@ export const describeSpend = (executionOrder) => {
 
 export async function retrieveAddress (walletId, currencyCode) {
   let address = null
-  if (!DEV) {
-    const addressData = await core.getAddress(walletId, currencyCode)
-    address = addressData.address.legacyAddress
-    if (!address) {
-      address = addressData.address.publicAddress
-    }
-  } else {
-    address = '1fakejPwRxWKiSgMBUewqMCws7DLuzAHQ'
+  const addressData = await core.getAddress(walletId, currencyCode)
+  address = addressData.address.legacyAddress
+  if (!address) {
+    address = addressData.address.publicAddress
   }
   return address
 }

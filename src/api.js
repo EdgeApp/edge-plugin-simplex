@@ -1,10 +1,10 @@
+import { edgeUrl, simplexUrl } from './config'
+
 import PropTypes from 'prop-types'
 import React from 'react'
-import uuidv1 from 'uuid/v1'
+import { cancelableFetch } from './utils'
 import { core } from 'edge-libplugin'
-
-import { DEV, cancelableFetch } from './utils'
-import { edgeUrl, simplexUrl } from './config'
+import uuidv1 from 'uuid/v1'
 
 export const PROVIDER = 'edge'
 export const API_VERSION = '1'
@@ -61,9 +61,6 @@ export function sessionId () {
 }
 
 export async function getUserId () {
-  if (DEV) {
-    return 'dev-user-id'
-  }
   let id = null
   let inCore = true
   try {

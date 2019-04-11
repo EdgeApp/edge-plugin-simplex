@@ -1,21 +1,22 @@
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import { withStyles } from 'material-ui/styles'
-import Button from 'material-ui/Button'
-import Typography from 'material-ui/Typography'
-import Grid from 'material-ui/Grid'
-import Drawer from 'material-ui/Drawer'
+import * as API from './api'
+
 import Dialog, {
   DialogContent,
   DialogContentText,
   DialogTitle
 } from 'material-ui/Dialog'
-import { CircularProgress } from 'material-ui/Progress'
-import { DEV, formatRate, formatStatus, formatAmount, describeSpend } from './utils'
-import moment from 'moment'
+import React, { Component } from 'react'
+import { describeSpend, formatAmount, formatRate, formatStatus } from './utils'
 
-import * as API from './api'
+import Button from 'material-ui/Button'
+import { CircularProgress } from 'material-ui/Progress'
+import Drawer from 'material-ui/Drawer'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import Typography from 'material-ui/Typography'
+import moment from 'moment'
 import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 const limitStyles = theme => ({
   p: {
@@ -445,14 +446,9 @@ class PendingSellUnstyled extends Component {
 
     let edgeTransaction
     try {
-      if (!DEV) {
-        await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
-        edgeTransaction = await window.edgeProvider.requestSpend([info])
-        this.setState({pending: true})
-      } else {
-        edgeTransaction = {txid: 'blockchain_txn_hash'}
-        console.log(info)
-      }
+      await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
+      edgeTransaction = await window.edgeProvider.requestSpend([info])
+      this.setState({pending: true})
       await API.executionOrderNotifyStatus(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
     } catch (e) {
       this.setState({pending: true})

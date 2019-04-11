@@ -3,7 +3,7 @@
   "parser": "babel-eslint",
   "plugins": ["flowtype", "standard"],
   "rules": {
-    "camelcase": "error",
+    "camelcase": "warn",
     "flowtype/generic-spacing": "off",
     "no-throw-literal": "error",
     "no-var": "error",
