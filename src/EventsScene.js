@@ -20,9 +20,9 @@ import './inline.css'
 
 const eventStyles = (theme) => ({
   eventScene: {
-    height: '100%',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flexGrow: 1
   },
   h3: {
     color: theme.palette.primary.main,
@@ -32,10 +32,10 @@ const eventStyles = (theme) => ({
 
   },
   card: {
-    margin: '20px',
     flex: '1 1 auto',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    overflow: 'scroll'
   }
 })
 
@@ -56,8 +56,9 @@ class EventsScene extends React.Component {
   }
 
   loadEvents = () => {
-    const { paymentId } = this.props.match.params
-    API.paymentDetails(paymentId)
+    const {transactionId, type} = this.props.match.params
+    const fetchFunction = type === 'sell' ? API.sellDetails : API.paymentDetails
+    fetchFunction(transactionId)
       .then(d => d.json())
       .then((data) => {
         this.setState({
@@ -75,7 +76,7 @@ class EventsScene extends React.Component {
   }
 
   _renderEvent = (event) => {
-    const status = formatStatus(event.payment_status)
+    const status = formatStatus(event.status)
     const date = moment(event.created_at)
     return (
       <Grid container key={event.id}>
@@ -92,7 +93,7 @@ class EventsScene extends React.Component {
     return (
       <Grid container>
         <Grid item xs={12}>
-          <PaymentDetails payment={this.state.details} />
+          <PaymentDetails transaction={this.state.details} />
         </Grid>
         <Grid item xs={12}>
           <Grid container className="header">

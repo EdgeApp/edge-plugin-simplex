@@ -1,15 +1,15 @@
+import { edgeUrl, simplexUrl } from './config'
+
 import PropTypes from 'prop-types'
 import React from 'react'
-import uuidv1 from 'uuid/v1'
-import { core } from 'edge-libplugin'
-
 import { cancelableFetch } from './utils'
+import { core } from 'edge-libplugin'
+import uuidv1 from 'uuid/v1'
 
 export const PROVIDER = 'edge'
 export const API_VERSION = '1'
 export const ACCEPT_LANGUAGE = 'en-US;q=0.7,en;q=0.3'
 export const HTTP_ACCEPT = 'en-US;q=0.7,en;q=0.3'
-export const RETURN_URL = 'https://simplex-api.edgesecure.co/redirect/'
 export const LIMITS = {
   USD: {
     min: 50,
@@ -20,6 +20,13 @@ export const LIMITS = {
     min: 50,
     daily: 16972,
     monthly: 42431
+  }
+}
+export const SELL_LIMITS = {
+  EUR: {
+    min: 50,
+    daily: 4400,
+    monthly: 8800
   }
 }
 
@@ -39,23 +46,21 @@ export const SUPPORTED_FIAT_CURRENCIES = [
   'USD', 'EUR'
 ]
 
-export const DEV = process.env.NODE_ENV === 'development'
+export const SUPPORTED_SELL_FIAT_CURRENCIES = [
+  'EUR'
+]
 
-const edgeUrl = DEV
-  ? 'https://simplex-sandbox-api.edgesecure.co'
-  : 'https://simplex-api.edgesecure.co'
-const simplexUrl = DEV
-  ? 'https://sandbox.test-simplexcc.com/payments/new'
-  : 'https://checkout.simplexcc.com/payments/new'
+export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
+  'BTC'
+]
+
+export const RETURN_URL = `${edgeUrl}/redirect/`
 
 export function sessionId () {
   return uuidv1()
 }
 
 export async function getUserId () {
-  if (DEV) {
-    return 'dev-user-id'
-  }
   let id = null
   let inCore = true
   try {
@@ -165,6 +170,68 @@ export async function requestQuote (requested, amount, digitalCurrency, fiatCurr
   return lastRequest.promise
 }
 
+const encode = (params) => {
+  const data = []
+  for (const k in params) {
+    if (params[k]) {
+      data.push(k + '=' + encodeURIComponent(params[k]))
+    }
+  }
+  return data.join('&')
+}
+
+export async function requestSellQuote (params) {
+  requestAbort()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/sell/quote/?' + encode(params), data)
+  return lastRequest.promise
+}
+
+export async function initiateSell (quote, refundAddress) {
+  requestAbort()
+  const userId = await getUserId()
+  const data = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      quote,
+      refund_crypto_address: refundAddress,
+      user_id: userId,
+      return_url: RETURN_URL
+    })
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/sell/initiate/', data)
+  return lastRequest.promise
+}
+export async function executionOrderNotifyStatus (executionOrder, status, cryptoAmountSent, txnHash) {
+  requestAbort()
+  const data = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: executionOrder.id,
+      sellId: executionOrder.sell_id,
+      status,
+      cryptoAmountSent,
+      txnHash
+    })
+  }
+  lastRequest = cancelableFetch(edgeUrl + '/execution-order-notify-status/', data)
+  return lastRequest.promise
+}
+
 export async function payments () {
   const userId = await getUserId()
 
@@ -178,6 +245,43 @@ export async function payments () {
   const url = `${edgeUrl}/payments/${userId}/`
   return window.fetch(url, data)
 }
+export async function sells () {
+  const userId = await getUserId()
+
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/sells/${userId}`
+  return window.fetch(url, data)
+}
+export async function getExecutionOrder (executionOrderId) {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/execution-orders/${executionOrderId}?` + encode({userId})
+  return window.fetch(url, data)
+}
+export async function getPendingExecutionOrders () {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/execution-orders?` + encode({userId, onlyPending: true})
+  return window.fetch(url, data)
+}
 
 export async function paymentDetails (paymentId) {
   const userId = await getUserId()
@@ -189,6 +293,19 @@ export async function paymentDetails (paymentId) {
     }
   }
   const url = `${edgeUrl}/payments/${userId}/${paymentId}/`
+  return window.fetch(url, data)
+}
+
+export async function sellDetails (sellId) {
+  const userId = await getUserId()
+  const data = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+  const url = `${edgeUrl}/sells/${userId}/${sellId}/`
   return window.fetch(url, data)
 }
 

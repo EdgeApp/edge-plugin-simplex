@@ -3,11 +3,13 @@ import React from 'react'
 import { withStyles } from 'material-ui/styles'
 import Divider from 'material-ui/Divider'
 import Typography from 'material-ui/Typography'
+import Grid from 'material-ui/Grid'
+import { ui } from 'edge-libplugin'
+import * as API from './api'
 
 import './inline.css'
 
-import { ui } from 'edge-libplugin'
-import { EdgeButton, SupportLink } from './components'
+import { EdgeButton, SupportLink, PendingSell } from './components'
 
 const startStyles = (theme) => ({
   container: {
@@ -58,17 +60,36 @@ StartParagraph.propTypes = {
 }
 
 class StartScene extends React.Component {
-  componentWillMount () {
+  constructor (props) {
+    super(props)
+    this.state = {
+      executionOrder: null
+    }
+  }
+  UNSAFE_componentWillMount () {
     ui.title('Buy with Simplex')
     window.scrollTo(0, 0)
     window.localStorage.removeItem('last_crypto_amount')
     window.localStorage.removeItem('last_fiat_amount')
   }
-  _start = () => {
+  componentDidMount () {
+    this._fetchPendingExecutionOrders()
+  }
+  async _fetchPendingExecutionOrders () {
+    const data = await API.getPendingExecutionOrders()
+    const pendingExecutionOrders = await data.json()
+    if (pendingExecutionOrders) {
+      this.setState({executionOrder: pendingExecutionOrders.res[0]})
+    }
+  }
+  _buy = () => {
     this.props.history.push('/buy/')
   }
+  _sell = () => {
+    this.props.history.push('/sell/')
+  }
   _gotoEvents = () => {
-    this.props.history.push('/payments/')
+    this.props.history.push('/transactions/')
   }
   render () {
     const classes = this.props.classes
@@ -77,12 +98,14 @@ class StartScene extends React.Component {
         <div className="text-center">
           <div className="iconLogo" />
         </div>
+        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder}/>}
         <div>
           <StartHeader text="Simplex" classes={classes} />
           <StartParagraph classes={classes}>
-            Simplex is an Edge Wallet bank card processing partner. It is the
-            service which allows you to purchase Bitcoin, Bitcoin Cash,
-            Ethereum, Litecoin and Ripple/XRP safely and quickly in just a few
+            Simplex is an Edge Wallet bank and card processing partner. It is
+            the service which allows you to purchase Bitcoin, Bitcoin Cash,
+            Ethereum, Litecoin and Ripple/XRP and sell Bitcoin, Bitcoin Cash
+            and Litecoin. You can do this safely and quickly in just a few
             short minutes.
           </StartParagraph>
         </div>
@@ -114,7 +137,14 @@ class StartScene extends React.Component {
         </div>
         <Divider className={classes.divider} />
         <div>
-          <EdgeButton color="primary" onClick={this._start}>Next</EdgeButton>
+          <Grid container spacing={24}>
+            <Grid item xs>
+              <EdgeButton color="primary" onClick={this._buy}>Buy Crypto</EdgeButton>
+            </Grid>
+            <Grid item xs>
+              <EdgeButton color="secondary" onClick={this._sell}>Sell Crypto</EdgeButton>
+            </Grid>
+          </Grid>
           <EdgeButton color="default" onClick={this._gotoEvents}>Transactions</EdgeButton>
         </div>
       </div>

@@ -1,7 +1,7 @@
 {
   "pluginId": "co.edgesecure.simplex",
   "name": "Simplex",
-  "subtitle": "Buy crypto with your credit card.",
+  "subtitle": "Buy & Sell crypto fast with your credit card.",
   "provider": "Edge Wallet",
   "iconUrl": "https://edge.app/wp-content/uploads/2019/03/simplex-logo-sm-square.png",
   "environment": {
