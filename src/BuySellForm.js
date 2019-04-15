@@ -262,8 +262,6 @@ class BuySellForm extends React.Component {
       error: errorMessage,
       quote: null
     })
-    setFiatInput('')
-    setCryptoInput('')
   }
 
   handleAccept = async () => {

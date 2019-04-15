@@ -125,7 +125,7 @@ class StartScene extends React.Component {
         <div>
           <StartHeader text="Time" classes={classes} />
           <StartParagraph classes={classes}>
-            Estimated transaction time is about 10-30min.
+            Estimated transaction time is 30 minutes to 5 business days.
           </StartParagraph>
         </div>
         <Divider className={classes.divider} />

@@ -377,7 +377,7 @@ class BuyScene extends React.Component {
             onClose={this.handleClose}
             message={() => {
               return `Are you sure you want to buy ${formatRate(quote.fiat_amount, fiat)}
-                worth of ${quote.currency}, with a fee of {formatRate(quote.fee, fiat)}?`
+                worth of ${quote.currency}, with a fee of ${formatRate(quote.fee, fiat)}?`
             }}
           />
         )}
