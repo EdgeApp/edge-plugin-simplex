@@ -1,15 +1,16 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Divider from 'material-ui/Divider'
-import Typography from 'material-ui/Typography'
-import Grid from 'material-ui/Grid'
-import { ui } from 'edge-libplugin'
-import * as API from './api'
-
 import './inline.css'
 
-import { EdgeButton, SupportLink, PendingSell } from './components'
+import * as API from './api'
+
+import { EdgeButton, PendingSell, SupportLink } from './components'
+
+import Divider from 'material-ui/Divider'
+import Grid from 'material-ui/Grid'
+import PropTypes from 'prop-types'
+import React from 'react'
+import Typography from 'material-ui/Typography'
+import { ui } from 'edge-libplugin'
+import { withStyles } from 'material-ui/styles'
 
 const startStyles = (theme) => ({
   container: {
@@ -108,18 +109,6 @@ class StartScene extends React.Component {
             and Litecoin. You can do this safely and quickly in just a few
             short minutes.
           </StartParagraph>
-        </div>
-        <Divider className={classes.divider} />
-        <div>
-          <StartHeader text="Fee" classes={classes} />
-          <StartParagraph classes={classes}>
-            Please note that additional fees will be charged, on top of the
-            above rate at checkout. Those fees are as follows:
-          </StartParagraph>
-          <ul className={classes.feeList}>
-            <li>Edge Wallet 1%</li>
-            <li>Credit Card processing by Simplex 5% ($10 min)</li>
-          </ul>
         </div>
         <Divider className={classes.divider} />
         <div>
