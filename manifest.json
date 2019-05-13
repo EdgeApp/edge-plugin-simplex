@@ -1,7 +1,7 @@
 {
   "pluginId": "co.edgesecure.simplex",
   "name": "Simplex",
-  "subtitle": "Buy crypto with your credit card.",
+  "subtitle": "Buy and sell crypto with credit card\nBTC, ETH, BCH, LTC, XRP\nFee: 6% / Settlement: 30 minutes-48 hours",
   "provider": "Edge Wallet",
   "iconUrl": "https://edge.app/wp-content/uploads/2019/03/simplex-logo-sm-square.png",
   "environment": {
