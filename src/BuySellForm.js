@@ -246,6 +246,9 @@ class BuySellForm extends React.Component {
   }
   errorHandler = e => {
     console.log(e)
+    if (e.isCanceled) {
+      return
+    }
     let errorMessage
     try {
       const error = JSON.parse(e.message)
@@ -262,12 +265,13 @@ class BuySellForm extends React.Component {
       error: errorMessage,
       quote: null
     })
+    window.scrollTo(0, 0)
   }
 
   handleAccept = async () => {
     try {
       await this.props.handleAccept(this.uaid, this.state.quote)
-      this.setState({error: null})
+      this.setState({error: null, dialogOpen: false})
     } catch (e) {
       this.errorHandler(e)
     }
