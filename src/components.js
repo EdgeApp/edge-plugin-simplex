@@ -433,6 +433,12 @@ class PendingSellUnstyled extends Component {
   _showDialog = () => {
     this.setState({displayConfirmDialog: true})
   }
+  _sendNotify = async (executionOrder, status, amount, txnId) => {
+    this.setState({pending: true})
+    await API.executionOrderNotifyStatus(executionOrder, status, amount, txnId)
+    await this._refreshExecutionOrder(this.state.executionOrder.id)
+    this.setState({pending: false})
+  }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
     if (!executionOrder) {
@@ -443,19 +449,15 @@ class PendingSellUnstyled extends Component {
       publicAddress: executionOrder.destination_crypto_address.trim(),
       nativeAmount: Math.round(executionOrder.requested_digital_amount * 100).toString() // simplex amount in MicroBit
     }
-
     let edgeTransaction
+    await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
     try {
-      await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
       edgeTransaction = await window.edgeProvider.requestSpend([info])
-      this.setState({pending: true})
-      await API.executionOrderNotifyStatus(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
     } catch (e) {
-      this.setState({pending: true})
-      await API.executionOrderNotifyStatus(executionOrder, 'failed')
+      await this._sendNotify(executionOrder, 'failed')
+      return
     }
-    await this._refreshExecutionOrder(this.state.executionOrder.id)
-    this.setState({pending: false})
+    await this._sendNotify(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
   }
 
   render () {

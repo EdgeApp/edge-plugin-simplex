@@ -42,15 +42,15 @@ export const cancelableFetch = (url, data) => {
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       if (canceled) {
-        reject(new Error({isCanceled: true}))
+        reject({isCanceled: true})
       } else {
         window.fetch(url, data)
           .then((val) => canceled
-            ? reject(new Error({isCanceled: true}))
+            ? reject({isCanceled: true})
             : resolve(val)
           )
           .catch((error) => canceled
-            ? reject(new Error({isCanceled: true}))
+            ? reject({isCanceled: true})
             : reject(error)
           )
       }
