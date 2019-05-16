@@ -429,7 +429,7 @@ class BuyScene extends React.Component {
               )}
             </Typography>
             <EdgeButton color="primary" onClick={this.openWallets}>
-              Change Destination Wallet
+              Choose Destination Wallet
             </EdgeButton>
           </CardContent>
         </Card>
