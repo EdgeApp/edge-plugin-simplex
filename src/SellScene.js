@@ -7,7 +7,7 @@ import BuySellForm from './BuySellForm'
 import PropTypes from 'prop-types'
 
 const formatResponse = async (response, wallet, valueType, value, cryptoCode, fiatCode) => {
-  const {res, err} = response
+  const { res, err } = response
   if (err) {
     throw new Error(err)
   }
@@ -34,7 +34,7 @@ const formatResponse = async (response, wallet, valueType, value, cryptoCode, fi
     refund_address: address
   }
   console.log(quote)
-  return {quote, rate}
+  return { quote, rate }
 }
 
 class SellScene extends Component {
@@ -47,7 +47,9 @@ class SellScene extends Component {
   requestFiatQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
     console.log(value + ' ' + cryptoCode + ' ' + fiatCode)
     const data = await API.requestSellQuote({
-      base_currency: cryptoCode, base_amount: convertToMillionsUnits(value), quote_currency: fiatCode
+      base_currency: cryptoCode,
+      base_amount: convertToMillionsUnits(value),
+      quote_currency: fiatCode
     })
     const r = await data.json()
     return formatResponse(r, selectedWallet, 'crypto', value, cryptoCode, fiatCode)
@@ -55,7 +57,9 @@ class SellScene extends Component {
 
   requestCryptoQuote = async (value, cryptoCode, fiatCode, selectedWallet) => {
     const data = await API.requestSellQuote({
-      base_currency: cryptoCode, quote_amount: convertToMillionsUnits(value), quote_currency: fiatCode
+      base_currency: cryptoCode,
+      quote_amount: convertToMillionsUnits(value),
+      quote_currency: fiatCode
     })
     const r = await data.json()
     return formatResponse(r, selectedWallet, 'fiat', value, cryptoCode, fiatCode)
@@ -80,7 +84,7 @@ class SellScene extends Component {
         requestFiatQuote={this.requestFiatQuote}
         requestCryptoQuote={this.requestCryptoQuote}
         handleAccept={this.handleAccept}
-        dialogMessage={(quote) => {
+        dialogMessage={quote => {
           return `Are you sure you want to sell ${formatAmount(quote.crypto_amount, quote.crypto_currency)}?`
         }}
       />

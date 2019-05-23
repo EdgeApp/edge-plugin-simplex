@@ -3,14 +3,7 @@ import './inline.css'
 import * as API from './api'
 
 import Card, { CardContent } from 'material-ui/Card'
-import {
-  ConfirmDialog,
-  DailyLimit,
-  EdgeButton,
-  PoweredBy,
-  Support,
-  WalletDrawer
-} from './components'
+import { ConfirmDialog, DailyLimit, EdgeButton, PoweredBy, Support, WalletDrawer } from './components'
 import { convertFromMillionsUnits, formatRate, setCryptoInput, setFiatInput } from './utils'
 import { core, ui } from 'edge-libplugin'
 
@@ -52,30 +45,33 @@ class BuySellForm extends React.Component {
   }
 
   loadWallets = () => {
-    core.wallets()
-      .then((data) => {
-        this.setState({
-          wallets: data.filter((wallet) =>
-            this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
-        }, () => {
-          if (this.state.wallets.length > 0) {
-            let i = 0
-            const lastWallet = window.localStorage.getItem('last_wallet')
-            if (lastWallet) {
-              for (; i < this.state.wallets.length; ++i) {
-                if (this.state.wallets[i].id === lastWallet) {
-                  break
+    core
+      .wallets()
+      .then(data => {
+        this.setState(
+          {
+            wallets: data.filter(wallet => this.props.supported_digital_currencies.indexOf(wallet.currencyCode) >= 0)
+          },
+          () => {
+            if (this.state.wallets.length > 0) {
+              let i = 0
+              const lastWallet = window.localStorage.getItem('last_wallet')
+              if (lastWallet) {
+                for (; i < this.state.wallets.length; ++i) {
+                  if (this.state.wallets[i].id === lastWallet) {
+                    break
+                  }
+                }
+                if (i >= this.state.wallets.length) {
+                  i = 0
                 }
               }
-              if (i >= this.state.wallets.length) {
-                i = 0
-              }
+              this.selectWallet(this.state.wallets[i])
+            } else {
+              // Probably exit...not available wallets
             }
-            this.selectWallet(this.state.wallets[i])
-          } else {
-            // Probably exit...not available wallets
           }
-        })
+        )
       })
       .catch(() => {
         this.setState({
@@ -91,7 +87,7 @@ class BuySellForm extends React.Component {
     const cryptoAmount = 1
     try {
       const fiatQuote = await this.props.requestFiatQuote(cryptoAmount, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
-      this.setState({rate: fiatQuote.rate})
+      this.setState({ rate: fiatQuote.rate })
     } catch (err) {
       this.errorHandler(err)
     }
@@ -125,20 +121,23 @@ class BuySellForm extends React.Component {
     })
   }
 
-  changeDefaultFiat = (event) => {
-    this.setState({
-      defaultFiat: event.target.value,
-      fiat: event.target.value,
-      rate: null,
-      quote: null
-    }, () => {
-      setCryptoInput('')
-      setFiatInput('')
-      this.loadConversion()
-    })
+  changeDefaultFiat = event => {
+    this.setState(
+      {
+        defaultFiat: event.target.value,
+        fiat: event.target.value,
+        rate: null,
+        quote: null
+      },
+      () => {
+        setCryptoInput('')
+        setFiatInput('')
+        this.loadConversion()
+      }
+    )
   }
 
-  selectWallet = (wallet) => {
+  selectWallet = wallet => {
     if (!wallet || !wallet.id) {
       return
     }
@@ -147,35 +146,38 @@ class BuySellForm extends React.Component {
     /* If we don't support this wallet's currency switch to the default */
     const fiat = fiatSupport ? wallet.fiatCurrencyCode : this.state.defaultFiat
     this.closeWallets()
-    this.setState({
-      selectedWallet: wallet,
-      rate: null,
-      quote: null,
-      fiatSupport,
-      fiat,
-      defaultFiat: fiat
-    }, () => {
-      const lastCrypto = window.localStorage.getItem('last_crypto_amount')
-      const lastFiat = window.localStorage.getItem('last_fiat_amount')
-      if (lastCrypto) {
-        setCryptoInput(lastCrypto)
-        this.calcFiat({target: {value: lastCrypto}})
-      } else if (lastFiat) {
-        setFiatInput(lastFiat)
-        this.calcCrypto({target: {value: lastFiat}})
-      } else {
-        setFiatInput('')
-        setCryptoInput('')
-        this.loadConversion()
+    this.setState(
+      {
+        selectedWallet: wallet,
+        rate: null,
+        quote: null,
+        fiatSupport,
+        fiat,
+        defaultFiat: fiat
+      },
+      () => {
+        const lastCrypto = window.localStorage.getItem('last_crypto_amount')
+        const lastFiat = window.localStorage.getItem('last_fiat_amount')
+        if (lastCrypto) {
+          setCryptoInput(lastCrypto)
+          this.calcFiat({ target: { value: lastCrypto } })
+        } else if (lastFiat) {
+          setFiatInput(lastFiat)
+          this.calcCrypto({ target: { value: lastFiat } })
+        } else {
+          setFiatInput('')
+          setCryptoInput('')
+          this.loadConversion()
+        }
+        window.localStorage.removeItem('last_crypto_amount')
+        window.localStorage.removeItem('last_fiat_amount')
       }
-      window.localStorage.removeItem('last_crypto_amount')
-      window.localStorage.removeItem('last_fiat_amount')
-    })
+    )
     ui.title(`Sell ${wallet.currencyCode}`)
     window.localStorage.setItem('last_wallet', wallet.id)
   }
 
-  calcFiat = async (event) => {
+  calcFiat = async event => {
     window.localStorage.setItem('last_crypto_amount', event.target.value)
     window.localStorage.removeItem('last_fiat_amount')
     if (event.target.value && event.target.value > 0) {
@@ -186,8 +188,7 @@ class BuySellForm extends React.Component {
       const cryptoValue = event.target.value
       const cryptoCurrency = this.state.selectedWallet.currencyCode
       try {
-        const fiatQuote = await this.props.requestFiatQuote(
-          cryptoValue, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
+        const fiatQuote = await this.props.requestFiatQuote(cryptoValue, cryptoCurrency, this.state.defaultFiat, this.state.selectedWallet)
         this.setState({
           fiatLoading: false,
           quote: fiatQuote.quote,
@@ -200,17 +201,20 @@ class BuySellForm extends React.Component {
       }
     } else {
       API.requestAbort()
-      this.setState({
-        quote: null,
-        fiatLoading: false,
-        cryptoLoading: false
-      }, () => {
-        setFiatInput('')
-      })
+      this.setState(
+        {
+          quote: null,
+          fiatLoading: false,
+          cryptoLoading: false
+        },
+        () => {
+          setFiatInput('')
+        }
+      )
     }
   }
 
-  calcCrypto = async (event) => {
+  calcCrypto = async event => {
     window.localStorage.setItem('last_fiat_amount', event.target.value)
     window.localStorage.removeItem('last_crypto_amount')
     if (event.target.value && event.target.value > 0) {
@@ -221,8 +225,7 @@ class BuySellForm extends React.Component {
       const fiatValue = event.target.value
       const fiatCurrency = this.state.selectedWallet.currencyCode
       try {
-        const r = await this.props.requestCryptoQuote(
-          fiatValue, fiatCurrency, this.state.defaultFiat, this.state.selectedWallet)
+        const r = await this.props.requestCryptoQuote(fiatValue, fiatCurrency, this.state.defaultFiat, this.state.selectedWallet)
         this.setState({
           cryptoLoading: false,
           quote: r.quote,
@@ -235,13 +238,16 @@ class BuySellForm extends React.Component {
       }
     } else {
       API.requestAbort()
-      this.setState({
-        quote: null,
-        fiatLoading: false,
-        cryptoLoading: false
-      }, () => {
-        setCryptoInput('')
-      })
+      this.setState(
+        {
+          quote: null,
+          fiatLoading: false,
+          cryptoLoading: false
+        },
+        () => {
+          setCryptoInput('')
+        }
+      )
     }
   }
   errorHandler = e => {
@@ -255,7 +261,7 @@ class BuySellForm extends React.Component {
       if (error.code === 'user_limit_exceeded') {
         errorMessage = 'Sorry, you have exceeded your limit, please try again tomorrow.'
       } else if (error.code === 'amounts_too_small') {
-        const {limit_amount: limitAmount, currency} = error.params
+        const { limit_amount: limitAmount, currency } = error.params
         errorMessage = `Amount is too small, should be at least ${convertFromMillionsUnits(limitAmount)} ${currency} or more.`
       }
     } catch (e) {
@@ -271,7 +277,7 @@ class BuySellForm extends React.Component {
   handleAccept = async () => {
     try {
       await this.props.handleAccept(this.uaid, this.state.quote)
-      this.setState({error: null, dialogOpen: false})
+      this.setState({ error: null, dialogOpen: false })
     } catch (e) {
       this.errorHandler(e)
     }
@@ -285,13 +291,14 @@ class BuySellForm extends React.Component {
     const { classes } = this.props
     const { fiat, fiatSupport, selectedWallet, quote } = this.state
     let errors = {
-      error: false, helperText: ''
+      error: false,
+      helperText: ''
     }
     if (1 === 0 && quote) {
       if (quote.fiat_amount > API.LIMITS[fiat].daily) {
-        errors = {error: true, helperText: 'Exceeding daily limit'}
+        errors = { error: true, helperText: 'Exceeding daily limit' }
       } else if (quote.fiat_amount > API.LIMITS[fiat].monthly) {
-        errors = {error: true, helperText: 'Exceeding monthly limit'}
+        errors = { error: true, helperText: 'Exceeding monthly limit' }
       } else if (quote.fiat_amount < API.LIMITS[fiat].min) {
         errors = {
           error: true,
@@ -303,9 +310,7 @@ class BuySellForm extends React.Component {
       <div>
         {this.state.error && (
           <div className={this.props.classes.error}>
-            <p>
-              {this.state.error}
-            </p>
+            <p>{this.state.error}</p>
           </div>
         )}
         {this.state.quote && (
@@ -321,33 +326,27 @@ class BuySellForm extends React.Component {
           />
         )}
         {selectedWallet && !fiatSupport && (
-          <Typography
-            component="h2"
-            className={classes.warning}>
-            Please note that {selectedWallet.fiatCurrencyCode} is not supported by Simplex.
-            Defaulting to
+          <Typography component="h2" className={classes.warning}>
+            Please note that {selectedWallet.fiatCurrencyCode} is not supported by Simplex. Defaulting to
             <select defaultValue={fiat} onChange={this.changeDefaultFiat}>
-              {this.props.supported_fiat_currencies.map(currency =>
-                <option key={currency} value={currency}>{currency}</option>)}
+              {this.props.supported_fiat_currencies.map(currency => (
+                <option key={currency} value={currency}>
+                  {currency}
+                </option>
+              ))}
             </select>
           </Typography>
         )}
-        <Typography
-          component="h2"
-          className={classes.warning}>
+        <Typography component="h2" className={classes.warning}>
           Please note that at the moment only Visa cards issued in EU are supported. More options will be available soon.
         </Typography>
         {!this.state.error && (
           <Card className={classes.card}>
             <CardContent>
-              <Typography
-                component="h3"
-                className={classes.h3}>
+              <Typography component="h3" className={classes.h3}>
                 Exchange rate
               </Typography>
-              {!this.state.rate && (
-                <CircularProgress size={25} />
-              )}
+              {!this.state.rate && <CircularProgress size={25} />}
               {this.state.rate && (
                 <Typography component="p" className={classes.conversion}>
                   1 {this.state.selectedWallet.currencyCode} = {this.state.rate} {fiat}
@@ -359,14 +358,9 @@ class BuySellForm extends React.Component {
 
         <Card className={classes.card}>
           <CardContent>
-            <Typography
-              variant="headline"
-              component="h3"
-              className={classes.h3}>
+            <Typography variant="headline" component="h3" className={classes.h3}>
               Source Wallet
-              {this.state.selectedWallet && (
-                <span>: {this.state.selectedWallet.name}</span>
-              )}
+              {this.state.selectedWallet && <span>: {this.state.selectedWallet.name}</span>}
             </Typography>
             <EdgeButton color="primary" onClick={this.openWallets}>
               Change Source Wallet
@@ -376,8 +370,12 @@ class BuySellForm extends React.Component {
 
         <Card className={classes.card}>
           <CardContent>
-            <TextField id="cryptoInput" type="number" label={'Enter amount you wish to sell'}
-              margin="none" fullWidth
+            <TextField
+              id="cryptoInput"
+              type="number"
+              label={'Enter amount you wish to sell'}
+              margin="none"
+              fullWidth
               disabled={this.state.cryptoLoading}
               InputLabelProps={{
                 shrink: true
@@ -388,14 +386,19 @@ class BuySellForm extends React.Component {
                   <InputAdornment position="end">
                     {this.state.cryptoLoading && <CircularProgress size={25} />}
                     {!this.state.cryptoLoading && selectedWallet && this.state.selectedWallet.currencyCode}
-                  </InputAdornment>)
+                  </InputAdornment>
+                )
               }}
               onChange={this.calcFiat}
             />
 
-            <TextField id="fiatInput" type="number" label="You will receive"
+            <TextField
+              id="fiatInput"
+              type="number"
+              label="You will receive"
               {...errors}
-              margin="none" fullWidth
+              margin="none"
+              fullWidth
               disabled={this.state.fiatLoading}
               InputLabelProps={{
                 shrink: true
@@ -406,42 +409,40 @@ class BuySellForm extends React.Component {
                   <InputAdornment position="end">
                     {this.state.fiatLoading && <CircularProgress size={25} />}
                     {!this.state.fiatLoading && fiat}
-                  </InputAdornment>)
+                  </InputAdornment>
+                )
               }}
               onChange={this.calcCrypto}
             />
 
-            <DailyLimit
-              fiat={fiat}
-              dailyLimit={API.SELL_LIMITS[fiat].daily}
-              monthlyLimit={API.SELL_LIMITS[fiat].monthly} />
+            <DailyLimit fiat={fiat} dailyLimit={API.SELL_LIMITS[fiat].daily} monthlyLimit={API.SELL_LIMITS[fiat].monthly} />
           </CardContent>
         </Card>
 
         <Card className={classes.card}>
           <CardContent>
-            <Typography component='p' className={classes.p}>
+            <Typography component="p" className={classes.p}>
               You will see a confirmation screen before you sell.
             </Typography>
             {quote && quote.address && (
-              <p style={{textAlign: 'center', maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap'}} component='p'>
-                Payment will be sent to<br />
-                <strong style={{maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap'}} className={classes.address}>{quote.address}</strong>
+              <p style={{ textAlign: 'center', maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap' }} component="p">
+                Payment will be sent to
+                <br />
+                <strong style={{ maxWidth: '100%', wordWrap: 'break-word', overflowWrap: 'break-word', flexWrap: 'wrap' }} className={classes.address}>
+                  {quote.address}
+                </strong>
               </p>
             )}
-            <EdgeButton
-              tabIndex={3}
-              color='primary'
-              onClick={this.next}
-              disabled={quote === null || errors.error}>
+            <EdgeButton tabIndex={3} color="primary" onClick={this.next} disabled={quote === null || errors.error}>
               Next
             </EdgeButton>
-            <EdgeButton onClick={this.cancel} tabIndex={4}>Cancel</EdgeButton>
+            <EdgeButton onClick={this.cancel} tabIndex={4}>
+              Cancel
+            </EdgeButton>
           </CardContent>
         </Card>
 
-        {quote &&
-          <API.SimplexForm quote={this.state.quote} />}
+        {quote && <API.SimplexForm quote={this.state.quote} />}
 
         <Support />
         <PoweredBy />
@@ -451,7 +452,8 @@ class BuySellForm extends React.Component {
           onHeaderClick={this.closeWallets}
           chooseWalletText={'Choose Source Wallet'}
           onClose={this.closeWallets}
-          wallets={this.state.wallets} />
+          wallets={this.state.wallets}
+        />
       </div>
     )
   }

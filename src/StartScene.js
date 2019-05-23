@@ -12,7 +12,7 @@ import Typography from 'material-ui/Typography'
 import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
-const startStyles = (theme) => ({
+const startStyles = theme => ({
   container: {
     backgroundColor: '#FFF',
     padding: '20px'
@@ -34,7 +34,7 @@ const startStyles = (theme) => ({
   }
 })
 
-const StartHeader = (props) => {
+const StartHeader = props => {
   return (
     <Typography variant="headline" component="h3" className={props.classes.h3}>
       {props.text}
@@ -47,7 +47,7 @@ StartHeader.propTypes = {
   text: PropTypes.string
 }
 
-const StartParagraph = (props) => {
+const StartParagraph = props => {
   return (
     <Typography component="p" className={props.classes.p}>
       {props.children}
@@ -80,7 +80,7 @@ class StartScene extends React.Component {
     const data = await API.getPendingExecutionOrders()
     const pendingExecutionOrders = await data.json()
     if (pendingExecutionOrders) {
-      this.setState({executionOrder: pendingExecutionOrders.res[0]})
+      this.setState({ executionOrder: pendingExecutionOrders.res[0] })
     }
   }
   _buy = () => {
@@ -99,23 +99,18 @@ class StartScene extends React.Component {
         <div className="text-center">
           <div className="iconLogo" />
         </div>
-        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder}/>}
+        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder} />}
         <div>
           <StartHeader text="Simplex" classes={classes} />
           <StartParagraph classes={classes}>
-            Simplex is an Edge Wallet bank and card processing partner. It is
-            the service which allows you to purchase Bitcoin, Bitcoin Cash,
-            Ethereum, Litecoin and Ripple/XRP and sell Bitcoin, Bitcoin Cash
-            and Litecoin. You can do this safely and quickly in just a few
-            short minutes.
+            Simplex is an Edge Wallet bank and card processing partner. It is the service which allows you to purchase Bitcoin, Bitcoin Cash, Ethereum, Litecoin
+            and Ripple/XRP and sell Bitcoin, Bitcoin Cash and Litecoin. You can do this safely and quickly in just a few short minutes.
           </StartParagraph>
         </div>
         <Divider className={classes.divider} />
         <div>
           <StartHeader text="Time" classes={classes} />
-          <StartParagraph classes={classes}>
-            Estimated transaction time is 30 minutes to 5 business days.
-          </StartParagraph>
+          <StartParagraph classes={classes}>Estimated transaction time is 30 minutes to 5 business days.</StartParagraph>
         </div>
         <Divider className={classes.divider} />
         <div>
@@ -128,13 +123,19 @@ class StartScene extends React.Component {
         <div>
           <Grid container spacing={24}>
             <Grid item xs>
-              <EdgeButton color="primary" onClick={this._buy}>Buy Crypto</EdgeButton>
+              <EdgeButton color="primary" onClick={this._buy}>
+                Buy Crypto
+              </EdgeButton>
             </Grid>
             <Grid item xs>
-              <EdgeButton color="secondary" onClick={this._sell}>Sell Crypto</EdgeButton>
+              <EdgeButton color="secondary" onClick={this._sell}>
+                Sell Crypto
+              </EdgeButton>
             </Grid>
           </Grid>
-          <EdgeButton color="default" onClick={this._gotoEvents}>Transactions</EdgeButton>
+          <EdgeButton color="default" onClick={this._gotoEvents}>
+            Transactions
+          </EdgeButton>
         </div>
       </div>
     )

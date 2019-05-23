@@ -9,7 +9,7 @@ import BuyScene from './BuyScene'
 import SellScene from './SellScene'
 import TransactionsScene from './TransactionsScene'
 import EventsScene from './EventsScene'
-import {PendingSellFromURL} from './components'
+import { PendingSellFromURL } from './components'
 
 const theme = createMuiTheme({
   palette: {
@@ -26,33 +26,40 @@ const theme = createMuiTheme({
   shadows: ['none']
 })
 
-export const routes = [{
-  path: '/',
-  main: StartScene,
-  exact: true
-}, {
-  path: '/buy/',
-  main: BuyScene,
-  exact: true
-}, {
-  path: '/sell/',
-  main: SellScene,
-  exact: true
-}, {
-  path: '/sell/execution-orders/:executionOrderId',
-  main: PendingSellFromURL,
-  exact: true
-}, {
-  path: '/transactions/',
-  main: TransactionsScene,
-  exact: true
-}, {
-  path: '/:type/events/:transactionId/',
-  main: EventsScene,
-  exact: true
-}]
+export const routes = [
+  {
+    path: '/',
+    main: StartScene,
+    exact: true
+  },
+  {
+    path: '/buy/',
+    main: BuyScene,
+    exact: true
+  },
+  {
+    path: '/sell/',
+    main: SellScene,
+    exact: true
+  },
+  {
+    path: '/sell/execution-orders/:executionOrderId',
+    main: PendingSellFromURL,
+    exact: true
+  },
+  {
+    path: '/transactions/',
+    main: TransactionsScene,
+    exact: true
+  },
+  {
+    path: '/:type/events/:transactionId/',
+    main: EventsScene,
+    exact: true
+  }
+]
 
-const appStyles = (theme) => ({
+const appStyles = theme => ({
   content: {
     height: '100%',
     display: 'flex',
@@ -67,12 +74,7 @@ class App extends React.Component {
         <Router>
           <div className={this.props.classes.content}>
             {routes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                exact={route.exact}
-                component={route.main}
-              />
+              <Route key={index} path={route.path} exact={route.exact} component={route.main} />
             ))}
           </div>
         </Router>

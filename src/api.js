@@ -38,21 +38,13 @@ export function requestAbort () {
   }
 }
 
-export const SUPPORTED_DIGITAL_CURRENCIES = [
-  'BTC', 'ETH', 'BCH', 'LTC', 'XRP'
-]
+export const SUPPORTED_DIGITAL_CURRENCIES = ['BTC', 'ETH', 'BCH', 'LTC', 'XRP']
 
-export const SUPPORTED_FIAT_CURRENCIES = [
-  'USD', 'EUR'
-]
+export const SUPPORTED_FIAT_CURRENCIES = ['USD', 'EUR']
 
-export const SUPPORTED_SELL_FIAT_CURRENCIES = [
-  'EUR'
-]
+export const SUPPORTED_SELL_FIAT_CURRENCIES = ['EUR']
 
-export const SUPPORTED_SELL_DIGITAL_CURRENCIES = [
-  'BTC'
-]
+export const SUPPORTED_SELL_DIGITAL_CURRENCIES = ['BTC']
 
 export const RETURN_URL = `${edgeUrl}/redirect/`
 
@@ -98,38 +90,38 @@ export function installId () {
 export async function requestConfirm (sessionId, uaid, quote) {
   const userId = await getUserId()
   const body = {
-    'account_details': {
-      'app_provider_id': PROVIDER,
-      'app_version_id': API_VERSION,
-      'app_end_user_id': userId,
-      'signup_login': {
-        'ip': '4.30.5.194',
-        'uaid': uaid,
-        'accept_language': ACCEPT_LANGUAGE,
-        'http_accept_language': HTTP_ACCEPT,
-        'user_agent': window.navigator.userAgent,
-        'cookie_session_id': sessionId,
-        'timestamp': new Date().toISOString()
+    account_details: {
+      app_provider_id: PROVIDER,
+      app_version_id: API_VERSION,
+      app_end_user_id: userId,
+      signup_login: {
+        ip: '4.30.5.194',
+        uaid: uaid,
+        accept_language: ACCEPT_LANGUAGE,
+        http_accept_language: HTTP_ACCEPT,
+        user_agent: window.navigator.userAgent,
+        cookie_session_id: sessionId,
+        timestamp: new Date().toISOString()
       }
     },
-    'transaction_details': {
-      'payment_details': {
-        'quote_id': quote.quote_id,
-        'payment_id': quote.payment_id,
-        'order_id': quote.order_id,
-        'fiat_total_amount': {
-          'currency': quote.fiat_total_amount_currency,
-          'amount': quote.fiat_total_amount_amount
+    transaction_details: {
+      payment_details: {
+        quote_id: quote.quote_id,
+        payment_id: quote.payment_id,
+        order_id: quote.order_id,
+        fiat_total_amount: {
+          currency: quote.fiat_total_amount_currency,
+          amount: quote.fiat_total_amount_amount
         },
-        'requested_digital_amount': {
-          'currency': quote.digital_currency,
-          'amount': quote.digital_amount
+        requested_digital_amount: {
+          currency: quote.digital_currency,
+          amount: quote.digital_amount
         },
-        'destination_wallet': {
-          'currency': quote.digital_currency,
-          'address': quote.address
+        destination_wallet: {
+          currency: quote.digital_currency,
+          address: quote.address
         },
-        'original_http_ref_url': 'https://www.edgesecure.co/'
+        original_http_ref_url: 'https://www.edgesecure.co/'
       }
     }
   }
@@ -137,7 +129,7 @@ export async function requestConfirm (sessionId, uaid, quote) {
     // signal: abortController.signal,
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(body)
@@ -154,7 +146,7 @@ export async function requestQuote (requested, amount, digitalCurrency, fiatCurr
     // signal: abortController.signal,
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -170,7 +162,7 @@ export async function requestQuote (requested, amount, digitalCurrency, fiatCurr
   return lastRequest.promise
 }
 
-const encode = (params) => {
+const encode = params => {
   const data = []
   for (const k in params) {
     if (params[k]) {
@@ -185,7 +177,7 @@ export async function requestSellQuote (params) {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
@@ -199,7 +191,7 @@ export async function initiateSell (quote, refundAddress) {
   const data = {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -217,7 +209,7 @@ export async function executionOrderNotifyStatus (executionOrder, status, crypto
   const data = {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -238,7 +230,7 @@ export async function payments () {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
@@ -251,7 +243,7 @@ export async function sells () {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
@@ -263,11 +255,11 @@ export async function getExecutionOrder (executionOrderId) {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
-  const url = `${edgeUrl}/execution-orders/${executionOrderId}?` + encode({userId})
+  const url = `${edgeUrl}/execution-orders/${executionOrderId}?` + encode({ userId })
   return window.fetch(url, data)
 }
 export async function getPendingExecutionOrders () {
@@ -275,11 +267,11 @@ export async function getPendingExecutionOrders () {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
-  const url = `${edgeUrl}/execution-orders?` + encode({userId, onlyPending: true})
+  const url = `${edgeUrl}/execution-orders?` + encode({ userId, onlyPending: true })
   return window.fetch(url, data)
 }
 
@@ -288,7 +280,7 @@ export async function paymentDetails (paymentId) {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
@@ -301,7 +293,7 @@ export async function sellDetails (sellId) {
   const data = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
   }
@@ -309,22 +301,22 @@ export async function sellDetails (sellId) {
   return window.fetch(url, data)
 }
 
-export const SimplexForm = (props) => {
+export const SimplexForm = props => {
   return (
-    <form id='payment_form' action={simplexUrl} method='POST' target='_self'>
-      <input type='hidden' name='version' value={props.quote.version} />
-      <input type='hidden' name='partner' value={props.quote.partner} />
-      <input type='hidden' name='payment_flow_type' value={props.quote.payment_flow_type} />
-      <input type='hidden' name='return_url' value={props.quote.return_url} />
-      <input type='hidden' name='quote_id' value={props.quote.quote_id} />
-      <input type='hidden' name='payment_id' value={props.quote.payment_id} />
-      <input type='hidden' name='user_id' value={props.quote.user_id} />
-      <input type='hidden' name='destination_wallet[address]' value={props.quote.address} />
-      <input type='hidden' name='destination_wallet[currency]' value={props.quote.currency} />
-      <input type='hidden' name='fiat_total_amount[amount]' value={props.quote.fiat_total_amount_amount} />
-      <input type='hidden' name='fiat_total_amount[currency]' value={props.quote.fiat_total_amount_currency} />
-      <input type='hidden' name='digital_total_amount[amount]' value={props.quote.digital_amount} />
-      <input type='hidden' name='digital_total_amount[currency]' value={props.quote.digital_currency} />
+    <form id="payment_form" action={simplexUrl} method="POST" target="_self">
+      <input type="hidden" name="version" value={props.quote.version} />
+      <input type="hidden" name="partner" value={props.quote.partner} />
+      <input type="hidden" name="payment_flow_type" value={props.quote.payment_flow_type} />
+      <input type="hidden" name="return_url" value={props.quote.return_url} />
+      <input type="hidden" name="quote_id" value={props.quote.quote_id} />
+      <input type="hidden" name="payment_id" value={props.quote.payment_id} />
+      <input type="hidden" name="user_id" value={props.quote.user_id} />
+      <input type="hidden" name="destination_wallet[address]" value={props.quote.address} />
+      <input type="hidden" name="destination_wallet[currency]" value={props.quote.currency} />
+      <input type="hidden" name="fiat_total_amount[amount]" value={props.quote.fiat_total_amount_amount} />
+      <input type="hidden" name="fiat_total_amount[currency]" value={props.quote.fiat_total_amount_currency} />
+      <input type="hidden" name="digital_total_amount[amount]" value={props.quote.digital_amount} />
+      <input type="hidden" name="digital_total_amount[currency]" value={props.quote.digital_currency} />
     </form>
   )
 }

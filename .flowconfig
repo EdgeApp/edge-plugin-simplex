@@ -1,0 +1,13 @@
+[ignore]
+
+.*/node_modules/react-native/.*
+.*/node_modules/react-native-keyboard-aware-scroll-view/.*
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]

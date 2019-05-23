@@ -1,10 +1,6 @@
 import * as API from './api'
 
-import Dialog, {
-  DialogContent,
-  DialogContentText,
-  DialogTitle
-} from 'material-ui/Dialog'
+import Dialog, { DialogContent, DialogContentText, DialogTitle } from 'material-ui/Dialog'
 import React, { Component } from 'react'
 import { describeSpend, formatAmount, formatRate, formatStatus } from './utils'
 
@@ -35,12 +31,11 @@ const buttonStyle = {
   borderRadius: '5px'
 }
 
-export const DailyLimit = withStyles(limitStyles)((props) => {
-  const {dailyLimit, monthlyLimit, fiat} = props
+export const DailyLimit = withStyles(limitStyles)(props => {
+  const { dailyLimit, monthlyLimit, fiat } = props
   return (
     <Typography component="p" className={props.classes.p}>
-      Daily Limit: {formatRate(dailyLimit, fiat)} /
-      Monthly Limit: {formatRate(monthlyLimit, fiat)}
+      Daily Limit: {formatRate(dailyLimit, fiat)} / Monthly Limit: {formatRate(monthlyLimit, fiat)}
     </Typography>
   )
 })
@@ -52,7 +47,7 @@ DailyLimit.propTypes = {
   fiat: PropTypes.string
 }
 
-export const EdgeButton = (props) => {
+export const EdgeButton = props => {
   return (
     <Button
       variant="raised"
@@ -64,7 +59,8 @@ export const EdgeButton = (props) => {
         padding: '15px 0',
         margin: '5px 0'
       }}
-      fullWidth>
+      fullWidth
+    >
       {props.children}
     </Button>
   )
@@ -77,8 +73,8 @@ EdgeButton.propTypes = {
   disabled: PropTypes.bool
 }
 
-export const SupportLink = (props) => {
-  return (<a href="mailto:support@simplex.com">support@simplex.com</a>)
+export const SupportLink = props => {
+  return <a href="mailto:support@simplex.com">support@simplex.com</a>
 }
 
 const supportThemes = theme => ({
@@ -88,7 +84,7 @@ const supportThemes = theme => ({
   }
 })
 
-export const Support = withStyles(supportThemes)((props) => {
+export const Support = withStyles(supportThemes)(props => {
   return (
     <Typography component="p" className={props.classes.p}>
       For support, please contact <SupportLink />.
@@ -100,7 +96,7 @@ Support.propTypes = {
   classes: PropTypes.object
 }
 
-const powerThemes = (theme) => ({
+const powerThemes = theme => ({
   container: {
     display: 'flex',
     justifyContent: 'space-around',
@@ -120,7 +116,7 @@ const powerThemes = (theme) => ({
   }
 })
 
-export const PoweredBy = withStyles(powerThemes)((props) => {
+export const PoweredBy = withStyles(powerThemes)(props => {
   return (
     <div className={props.classes.container}>
       <div className={`iconLogo ${props.classes.logo}`} />
@@ -128,7 +124,6 @@ export const PoweredBy = withStyles(powerThemes)((props) => {
         Powered by Simplex
       </Typography>
     </div>
-
   )
 })
 
@@ -136,7 +131,7 @@ PoweredBy.propTypes = {
   classes: PropTypes.object
 }
 
-const confirmStyles = (theme) => ({
+const confirmStyles = theme => ({
   title: {
     textAlign: 'center',
     color: theme.palette.primary.main,
@@ -187,7 +182,7 @@ class ConfirmUnstyled extends Component {
         {!this.state.loading && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description" className={this.props.classes.p}>
-              { this.props.message() }
+              {this.props.message()}
             </DialogContentText>
             <div>
               <EdgeButton color="primary" onClick={this.onAccept}>
@@ -218,7 +213,7 @@ ConfirmUnstyled.propTypes = {
 
 export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
 
-export const WalletButton = (props) => {
+export const WalletButton = props => {
   return (
     <Button
       variant="raised"
@@ -232,7 +227,8 @@ export const WalletButton = (props) => {
         borderRadius: '0',
         borderTop: '1px solid #d8d6d8'
       }}
-      fullWidth>
+      fullWidth
+    >
       {props.children}
     </Button>
   )
@@ -247,26 +243,21 @@ WalletButton.propTypes = {
 }
 
 export class WalletDrawer extends Component {
-  renderWallet = (wallet) => {
+  renderWallet = wallet => {
     return (
-      <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor='white'>
+      <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor="white">
         {wallet.name} ({wallet.currencyCode})
       </WalletButton>
     )
   }
   renderWallets = () => {
-    return this.props.wallets.map((wallet) =>
-      this.renderWallet(wallet))
+    return this.props.wallets.map(wallet => this.renderWallet(wallet))
   }
   render () {
     return (
-      <Drawer
-        anchor="bottom"
-        variant="temporary"
-        open={this.props.open}
-        onClose={this.props.onClose}>
+      <Drawer anchor="bottom" variant="temporary" open={this.props.open} onClose={this.props.onClose}>
         <div>
-          <WalletButton color="primary" onClick={this.props.onHeaderClick} backgroundColor='white'>
+          <WalletButton color="primary" onClick={this.props.onHeaderClick} backgroundColor="white">
             <span style={{ fontWeight: 'bold' }}>{this.props.chooseWalletText}</span>
           </WalletButton>
           {this.renderWallets()}
@@ -285,7 +276,7 @@ WalletDrawer.propTypes = {
   wallets: PropTypes.array
 }
 
-export const TransactionRow = (props) => {
+export const TransactionRow = props => {
   const transaction = props.transaction
   const status = formatStatus(transaction.status)
   const fiatAmount = transaction.fiat_total_amount
@@ -317,7 +308,9 @@ export const TransactionRow = (props) => {
         <Typography variant="caption">{transactionFiat}</Typography>
         <Typography variant="caption">{transactionCrypto}</Typography>
       </Grid>
-      <Grid item xs={3}>{status}</Grid>
+      <Grid item xs={3}>
+        {status}
+      </Grid>
     </Grid>
   )
 }
@@ -328,45 +321,49 @@ TransactionRow.propTypes = {
   history: PropTypes.object
 }
 
-export const PaymentDetails = (props) => {
+export const PaymentDetails = props => {
   const transaction = props.transaction
-  const fiatAmount = formatRate(
-    transaction.fiat_total_amount,
-    transaction.fiat_currency)
-  const cryptoAmount = formatRate(
-    transaction.requested_digital_amount,
-    transaction.requested_digital_currency)
+  const fiatAmount = formatRate(transaction.fiat_total_amount, transaction.fiat_currency)
+  const cryptoAmount = formatRate(transaction.requested_digital_amount, transaction.requested_digital_currency)
   const date = moment(transaction.created_at)
   return (
     <Grid container key={transaction.id}>
       <Grid item xs={12}>
         <Grid container className="header">
-          <Grid item xs={6}><Typography>Id</Typography></Grid>
-          <Grid item xs={6}><Typography>
-            {transaction.url
-              ? (<span>
-                <a href={transaction.url}>
-                  {transaction.id}
-                </a>
-                <small>
-                  {` (click to view)`}
-                </small>
-              </span>)
-              : (<span>{transaction.id}</span>)}
-          </Typography></Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container className="header">
-          <Grid item xs={6}><Typography>Date</Typography></Grid>
           <Grid item xs={6}>
-            <Typography variant="body1">{date.format('LL')} {date.format('LT')}</Typography>
+            <Typography>Id</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography>
+              {transaction.url ? (
+                <span>
+                  <a href={transaction.url}>{transaction.id}</a>
+                  <small>{` (click to view)`}</small>
+                </span>
+              ) : (
+                <span>{transaction.id}</span>
+              )}
+            </Typography>
           </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12}>
         <Grid container className="header">
-          <Grid item xs={6}><Typography>Amount</Typography></Grid>
+          <Grid item xs={6}>
+            <Typography>Date</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1">
+              {date.format('LL')} {date.format('LT')}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container className="header">
+          <Grid item xs={6}>
+            <Typography>Amount</Typography>
+          </Grid>
           <Grid item xs={6}>
             <Typography>
               {formatAmount(fiatAmount, transaction.fiat_currency)} / {formatAmount(cryptoAmount, transaction.requested_digital_currency)}
@@ -424,20 +421,20 @@ class PendingSellUnstyled extends Component {
     const data = await API.getExecutionOrder(executionOrderId)
     const pendingExecutionOrder = await data.json()
     if (pendingExecutionOrder) {
-      this.setState({executionOrder: pendingExecutionOrder.res})
+      this.setState({ executionOrder: pendingExecutionOrder.res })
     }
   }
   _closeDialog = () => {
-    this.setState({displayConfirmDialog: false})
+    this.setState({ displayConfirmDialog: false })
   }
   _showDialog = () => {
-    this.setState({displayConfirmDialog: true})
+    this.setState({ displayConfirmDialog: true })
   }
   _sendNotify = async (executionOrder, status, amount, txnId) => {
-    this.setState({pending: true})
+    this.setState({ pending: true })
     await API.executionOrderNotifyStatus(executionOrder, status, amount, txnId)
     await this._refreshExecutionOrder(this.state.executionOrder.id)
-    this.setState({pending: false})
+    this.setState({ pending: false })
   }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
@@ -463,47 +460,62 @@ class PendingSellUnstyled extends Component {
   render () {
     const getBody = () => {
       switch (executionOrder.status) {
-        case 'completed': return (
-          <p> Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain.
-            You will receive an email with update from Simplex.</p>
-        )
-        case 'cancelled': return (
-          <p>Transaction was cancelled.</p>
-        )
-        case 'failed': return (<p>Transaction Failed</p>)
-        default: return (<div>
-          <p>
-            Your details were verified and you can proceed In order to sell your crypto, please approve sending <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
-          </p>
-          <div>
-            <EdgeButton color="primary" onClick={this._sendFunds}>Approve</EdgeButton>
-            <EdgeButton color="secondary" onClick={this._showDialog}>Cancel Transaction</EdgeButton>
-          </div>
-        </div>)
+        case 'completed':
+          return (
+            <p>
+              {' '}
+              Your crypto was sent to broker, please wait until transaction will be confirmed by blockchain. You will receive an email with update from Simplex.
+            </p>
+          )
+        case 'cancelled':
+          return <p>Transaction was cancelled.</p>
+        case 'failed':
+          return <p>Transaction Failed</p>
+        default:
+          return (
+            <div>
+              <p>
+                Your details were verified and you can proceed In order to sell your crypto, please approve sending{' '}
+                <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
+              </p>
+              <div>
+                <EdgeButton color="primary" onClick={this._sendFunds}>
+                  Approve
+                </EdgeButton>
+                <EdgeButton color="secondary" onClick={this._showDialog}>
+                  Cancel Transaction
+                </EdgeButton>
+              </div>
+            </div>
+          )
       }
     }
     const executionOrder = this.state.executionOrder
     if (executionOrder) {
-      const body = this.state.pending
-        ? (
-          <div className={this.props.classes.progress}>
-            <CircularProgress />
-          </div>
-        )
-        : getBody()
-      return (<div className={this.props.classes.info}>
-        {this.state.displayConfirmDialog && <ConfirmDialog
-          message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
-          open={true}
-          acceptMsg={'No, let me think a little'}
-          rejectMsg={'Yes, I’m sure'}
-          header={'Cancel Transaction'}
-          pendingMsg={'Cancelling...'}
-          onClose={this._cancel}
-          onAccept={this._closeDialog}
-        />}
-        {body}
-      </div>)
+      const body = this.state.pending ? (
+        <div className={this.props.classes.progress}>
+          <CircularProgress />
+        </div>
+      ) : (
+        getBody()
+      )
+      return (
+        <div className={this.props.classes.info}>
+          {this.state.displayConfirmDialog && (
+            <ConfirmDialog
+              message={() => 'Are you sure? This will cancel transaction and you will need to start over again if you still want to sell your crypto.'}
+              open={true}
+              acceptMsg={'No, let me think a little'}
+              rejectMsg={'Yes, I’m sure'}
+              header={'Cancel Transaction'}
+              pendingMsg={'Cancelling...'}
+              onClose={this._cancel}
+              onAccept={this._closeDialog}
+            />
+          )}
+          {body}
+        </div>
+      )
     } else {
       return null
     }
@@ -532,7 +544,7 @@ export class PendingSellFromURLUnStyled extends React.Component {
     const data = await API.getExecutionOrder(this.props.match.params.executionOrderId)
     const pendingExecutionOrder = await data.json()
     if (pendingExecutionOrder) {
-      this.setState({executionOrder: pendingExecutionOrder.res})
+      this.setState({ executionOrder: pendingExecutionOrder.res })
     }
   }
 
@@ -541,14 +553,20 @@ export class PendingSellFromURLUnStyled extends React.Component {
   }
 
   render () {
-    return (<div className={this.props.classes.container}>
-      {this.state.executionOrder && <div>
-        <h3 className={this.props.classes.header}> Selling <strong>{describeSpend(this.state.executionOrder)}</strong> to Credit Card</h3>
-        <PendingSell history={this.props.history} executionOrder={this.state.executionOrder} />
-      </div>}
-      <EdgeButton onClick={this._home}>Back to Wallet</EdgeButton>
-
-    </div>)
+    return (
+      <div className={this.props.classes.container}>
+        {this.state.executionOrder && (
+          <div>
+            <h3 className={this.props.classes.header}>
+              {' '}
+              Selling <strong>{describeSpend(this.state.executionOrder)}</strong> to Credit Card
+            </h3>
+            <PendingSell history={this.props.history} executionOrder={this.state.executionOrder} />
+          </div>
+        )}
+        <EdgeButton onClick={this._home}>Back to Wallet</EdgeButton>
+      </div>
+    )
   }
 }
 

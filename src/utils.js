@@ -42,17 +42,12 @@ export const cancelableFetch = (url, data) => {
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       if (canceled) {
-        reject({isCanceled: true})
+        reject({ isCanceled: true })
       } else {
-        window.fetch(url, data)
-          .then((val) => canceled
-            ? reject({isCanceled: true})
-            : resolve(val)
-          )
-          .catch((error) => canceled
-            ? reject({isCanceled: true})
-            : reject(error)
-          )
+        window
+          .fetch(url, data)
+          .then(val => (canceled ? reject({ isCanceled: true }) : resolve(val)))
+          .catch(error => (canceled ? reject({ isCanceled: true }) : reject(error)))
       }
     }, 250)
   })
@@ -78,7 +73,7 @@ export function setDomValue (id, value) {
     document.getElementById(id).value = value
   }
 }
-export const describeSpend = (executionOrder) => {
+export const describeSpend = executionOrder => {
   if (!executionOrder) {
     return null
   }
