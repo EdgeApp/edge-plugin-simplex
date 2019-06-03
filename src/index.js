@@ -7,6 +7,24 @@ import ReactDOM from 'react-dom'
 
 const root = document.getElementById('root')
 
-if (root !== null) {
-  ReactDOM.render(<App />, root)
+function mountTheApp () {
+  if (root !== null) {
+    console.log('do the app thing')
+    ReactDOM.render(<App />, root)
+  }
 }
+function getEdgeProvider (callback: Function) {
+  if (window.edgeProvider != null) {
+    callback(window.edgeProvider)
+  } else {
+    document.addEventListener('edgeProviderReady', function () {
+      callback(window.edgeProvider)
+    })
+  }
+}
+function isEdge () {
+  if (window.navigator.userAgent.indexOf('app.edge') >= 0) {
+    getEdgeProvider(mountTheApp)
+  }
+}
+setTimeout(isEdge, 500)

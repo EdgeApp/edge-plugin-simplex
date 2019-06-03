@@ -3,10 +3,11 @@ import './inline.css'
 import * as API from './api'
 
 import Card, { CardContent } from 'material-ui/Card'
-import { ConfirmDialog, DailyLimit, EdgeButton, PoweredBy, Support, WalletDrawer } from './components'
+import { DailyLimit, EdgeButton, PoweredBy, Support } from './components'
 import { core, ui } from 'edge-libplugin'
 
 import { CircularProgress } from 'material-ui/Progress'
+import { ConfirmDialog } from './components/ConfirmDialog'
 import { InputAdornment } from 'material-ui/Input'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -35,13 +36,13 @@ const buildObject = async (res, wallet) => {
     throw new Error('Invalid response')
   }
   let address = null
-  const addressData = await core.getAddress(wallet.id, wallet.currencyCode)
+  const addressData = await window.edgeProvider.getReceiveAddress(wallet.id, wallet.currencyCode)
   if (wallet.currencyCode === 'BCH') {
-    address = addressData.address.publicAddress
+    address = addressData.publicAddress
   } else {
-    address = addressData.address.legacyAddress
+    address = addressData.legacyAddress
     if (!address) {
-      address = addressData.address.publicAddress
+      address = addressData.publicAddress
     }
   }
   const quote = {
@@ -505,14 +506,14 @@ class BuyScene extends React.Component {
 
         <Support />
         <PoweredBy />
-        <WalletDrawer
+        {{/* <WalletDrawer
           open={this.state.drawerOpen}
           selectWallet={this.selectWallet}
           onHeaderClick={this.closeWallets}
           chooseWalletText={'Choose Destination Wallet'}
           onClose={this.closeWallets}
           wallets={this.state.wallets}
-        />
+        /> */}}
       </div>
     )
   }

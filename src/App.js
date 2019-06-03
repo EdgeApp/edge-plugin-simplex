@@ -1,15 +1,15 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { HashRouter as Router, Route } from 'react-router-dom'
-import { withStyles, createMuiTheme } from 'material-ui/styles'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+// @flow
+import React, { Component } from 'react'
+import { Route, HashRouter as Router } from 'react-router-dom'
+import { createMuiTheme, withStyles } from 'material-ui/styles'
 
-import StartScene from './StartScene'
 import BuyScene from './BuyScene'
-import SellScene from './SellScene'
-import TransactionsScene from './TransactionsScene'
 import EventsScene from './EventsScene'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { PendingSellFromURL } from './components'
+import SellScene from './SellScene'
+import StartScene from './StartScene'
+import TransactionsScene from './TransactionsScene'
 
 const theme = createMuiTheme({
   palette: {
@@ -23,7 +23,7 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "'Source Sans Pro', sans-serif !important"
   },
-  shadows: ['none']
+  shadows: Array(25).fill('none')
 })
 
 export const routes = [
@@ -67,7 +67,12 @@ const appStyles = theme => ({
   }
 })
 
-class App extends React.Component {
+type Props = {
+  classes: Object
+}
+type State = {}
+
+class App extends Component<Props, State> {
   render () {
     return (
       <MuiThemeProvider theme={theme}>
@@ -81,10 +86,6 @@ class App extends React.Component {
       </MuiThemeProvider>
     )
   }
-}
-
-App.propTypes = {
-  classes: PropTypes.object
 }
 
 export default withStyles(appStyles)(App)

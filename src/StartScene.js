@@ -68,13 +68,13 @@ class StartScene extends React.Component {
     }
   }
   UNSAFE_componentWillMount () {
-    ui.title('Buy with Simplex')
+    ui.title('Buy with Simplex - 1')
     window.scrollTo(0, 0)
     window.localStorage.removeItem('last_crypto_amount')
     window.localStorage.removeItem('last_fiat_amount')
   }
   componentDidMount () {
-    this._fetchPendingExecutionOrders()
+    // this._fetchPendingExecutionOrders()
   }
   async _fetchPendingExecutionOrders () {
     const data = await API.getPendingExecutionOrders()
@@ -95,7 +95,7 @@ class StartScene extends React.Component {
   render () {
     const classes = this.props.classes
     return (
-      <div className={classes.container}>
+      <div className={classes.container}>requestFiatQuote
         <div className="text-center">
           <div className="iconLogo" />
         </div>

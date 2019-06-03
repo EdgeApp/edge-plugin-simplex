@@ -1,4 +1,5 @@
-const SANDBOX = false
+// @flow
+const SANDBOX = true
 
 export const edgeUrl = SANDBOX ? 'https://simplex-sandbox-api.edgesecure.co' : 'https://simplex-api.edgesecure.co'
 

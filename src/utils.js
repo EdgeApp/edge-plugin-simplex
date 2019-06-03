@@ -1,4 +1,4 @@
-import { core } from 'edge-libplugin'
+// import { core } from 'edge-libplugin'
 
 export function formatRate (rate, currency) {
   if (!rate) {
@@ -38,20 +38,29 @@ export function formatStatus (status) {
 }
 
 export const cancelableFetch = (url, data) => {
+  console.log('cancelable fetch url', url)
+  console.log('cancelable fetch data', data)
   let canceled = false
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       if (canceled) {
+        console.log('cancelabled ')
         reject({ isCanceled: true })
       } else {
         window
           .fetch(url, data)
-          .then(val => (canceled ? reject({ isCanceled: true }) : resolve(val)))
+          .then(val => {
+            if (canceled) {
+              reject({ isCanceled: true })
+            } else {
+              resolve(val)
+            }
+          })
           .catch(error => (canceled ? reject({ isCanceled: true }) : reject(error)))
       }
     }, 250)
   })
-
+  console.log('cancelable fetch ready to return promise. ')
   return {
     promise,
     cancel () {
@@ -80,14 +89,26 @@ export const describeSpend = executionOrder => {
   return `${convertFromMillionsUnits(executionOrder.requested_digital_amount)} ${executionOrder.requested_digital_currency}`
 }
 
-export async function retrieveAddress (walletId, currencyCode) {
+export async function retrieveAddress () {
+  console.log('retrieveAddress ')
   let address = null
-  const addressData = await core.getAddress(walletId, currencyCode)
-  address = addressData.address.legacyAddress
-  if (!address) {
-    address = addressData.address.publicAddress
+  try {
+    const addressData = await window.edgeProvider.getReceiveAddress()
+    console.log('retrieveAddress I got it ', address)
+    address = addressData.address.legacyAddress
+    if (!address) {
+      address = addressData.address.publicAddress
+    }
+    return address
+  } catch (e) {
+    console.log('well this is bad ')
+    /* if (counter === 3) {
+      throw new Error('this is failing ')
+    }
+    counter++
+    setTimeout(retrieveAddress, 500, counter) */
+    return null
   }
-  return address
 }
 export function convertToMillionsUnits (val) {
   return val * 1000000

@@ -3,10 +3,10 @@
   "version": "0.0.3",
   "private": true,
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
+    "babel-eslint": "^8.1.0",
     "babel-jest": "^20.0.3",
     "edge-libplugin": "https://github.com/EdgeApp/edge-libplugin.git#9048d04",
-    "eslint": "^4.12.1",
+    "eslint": "^4.17.1",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
@@ -38,7 +38,7 @@
     "lint:fix": "npm run lint -- --fix",
     "flow:0": "flow; exit 0",
     "flow": "flow",
-    "precommit": "lint-staged && flow",
+    "precommit": "flow",
     "format": "import-sort -l --write '*.js' 'src/**/*.js' 'test/**/*.js'; prettier-eslint --write '*.js' 'src/**/*.js' 'test/**/*.js'"
   },
   "husky": {

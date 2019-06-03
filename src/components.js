@@ -1,12 +1,11 @@
 import * as API from './api'
 
-import Dialog, { DialogContent, DialogContentText, DialogTitle } from 'material-ui/Dialog'
 import React, { Component } from 'react'
 import { describeSpend, formatAmount, formatRate, formatStatus } from './utils'
 
 import Button from 'material-ui/Button'
 import { CircularProgress } from 'material-ui/Progress'
-import Drawer from 'material-ui/Drawer'
+import { ConfirmDialog } from './components/ConfirmDialog'
 import Grid from 'material-ui/Grid'
 import PropTypes from 'prop-types'
 import Typography from 'material-ui/Typography'
@@ -131,7 +130,7 @@ PoweredBy.propTypes = {
   classes: PropTypes.object
 }
 
-const confirmStyles = theme => ({
+/* const confirmStyles = theme => ({
   title: {
     textAlign: 'center',
     color: theme.palette.primary.main,
@@ -211,7 +210,7 @@ ConfirmUnstyled.propTypes = {
   acceptMsg: PropTypes.string.isRequired
 }
 
-export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled)
+export const ConfirmDialog = withStyles(confirmStyles)(ConfirmUnstyled) */
 
 export const WalletButton = props => {
   return (
@@ -242,7 +241,7 @@ WalletButton.propTypes = {
   disabled: PropTypes.bool
 }
 
-export class WalletDrawer extends Component {
+/* export class WalletDrawer extends Component {
   renderWallet = wallet => {
     return (
       <WalletButton key={wallet.id} onClick={() => this.props.selectWallet(wallet)} backgroundColor="white">
@@ -275,7 +274,7 @@ WalletDrawer.propTypes = {
   chooseWalletText: PropTypes.string,
   wallets: PropTypes.array
 }
-
+ */
 export const TransactionRow = props => {
   const transaction = props.transaction
   const status = formatStatus(transaction.status)
