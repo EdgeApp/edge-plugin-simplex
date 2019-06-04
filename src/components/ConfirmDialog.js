@@ -3,7 +3,7 @@ import Dialog, { DialogContent, DialogContentText, DialogTitle } from 'material-
 import React, {Component} from 'react'
 
 import { CircularProgress } from 'material-ui/Progress'
-import { EdgeButton } from '../components'
+import { EdgeButton } from '../components/EdgeButton'
 import Typography from 'material-ui/Typography'
 import { withStyles } from 'material-ui/styles'
 

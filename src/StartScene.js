@@ -1,14 +1,16 @@
+// @flow
 import './inline.css'
 
 import * as API from './api'
 
-import { EdgeButton, PendingSell, SupportLink } from './components'
+import { PendingSell, SupportLink } from './components.js'
+import React, { Component } from 'react'
 
 import Divider from 'material-ui/Divider'
+import { EdgeButton } from './components/EdgeButton'
 import Grid from 'material-ui/Grid'
-import PropTypes from 'prop-types'
-import React from 'react'
-import Typography from 'material-ui/Typography'
+import { StartHeader } from './components/StartHeader'
+import { StartParagraph } from './components/StartParagraph'
 import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
@@ -34,33 +36,15 @@ const startStyles = theme => ({
   }
 })
 
-const StartHeader = props => {
-  return (
-    <Typography variant="headline" component="h3" className={props.classes.h3}>
-      {props.text}
-    </Typography>
-  )
+type Props = {
+  classes: Object,
+  history: Object
+}
+type State = {
+  executionOrder: Object | null
 }
 
-StartHeader.propTypes = {
-  classes: PropTypes.object,
-  text: PropTypes.string
-}
-
-const StartParagraph = props => {
-  return (
-    <Typography component="p" className={props.classes.p}>
-      {props.children}
-    </Typography>
-  )
-}
-
-StartParagraph.propTypes = {
-  classes: PropTypes.object.isRequired,
-  children: PropTypes.node.isRequired
-}
-
-class StartScene extends React.Component {
+class StartScene extends Component<Props, State> {
   constructor (props) {
     super(props)
     this.state = {
@@ -74,9 +58,10 @@ class StartScene extends React.Component {
     window.localStorage.removeItem('last_fiat_amount')
   }
   componentDidMount () {
-    // this._fetchPendingExecutionOrders()
+    console.log('Component Did Mount')
+    setTimeout(this.fetchPendingExecutionOrders, 500)
   }
-  async _fetchPendingExecutionOrders () {
+  fetchPendingExecutionOrders = async () => {
     const data = await API.getPendingExecutionOrders()
     const pendingExecutionOrders = await data.json()
     if (pendingExecutionOrders) {
@@ -95,7 +80,7 @@ class StartScene extends React.Component {
   render () {
     const classes = this.props.classes
     return (
-      <div className={classes.container}>requestFiatQuote
+      <div className={classes.container}>
         <div className="text-center">
           <div className="iconLogo" />
         </div>
@@ -140,11 +125,6 @@ class StartScene extends React.Component {
       </div>
     )
   }
-}
-
-StartScene.propTypes = {
-  history: PropTypes.object,
-  classes: PropTypes.object
 }
 
 export default withStyles(startStyles)(StartScene)

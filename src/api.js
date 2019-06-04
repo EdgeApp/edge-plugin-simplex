@@ -3,7 +3,6 @@ import { edgeUrl, simplexUrl } from './config'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { cancelableFetch } from './utils'
-// import { core } from 'edge-libplugin'
 import uuidv1 from 'uuid/v1'
 
 export const PROVIDER = 'edge'
@@ -53,13 +52,13 @@ export function sessionId () {
 }
 
 export async function getUserId () {
+  console.log('getUserId starting')
   let id = null
   let inCore = true
   try {
-    id = await window.edgeProvider.readData(['simplex_user_id'])
-    // core.debugLevel(0, 'Found user key in core')
+    const obj = await window.edgeProvider.readData(['simplex_user_id'])
+    id = obj['simplex_user_id']
   } catch (e) {
-    // core.debugLevel(0, 'No existing key in core')
     inCore = false
   }
   if (!id) {
@@ -67,14 +66,11 @@ export async function getUserId () {
   }
   if (!id) {
     id = uuidv1()
-    // core.debugLevel(0, 'Generating id "' + id + "' ")
   }
   if (!inCore) {
     try {
       await window.edgeProvider.writeData({'simplex_user_id': id})
-      // core.debugLevel(0, 'Wrote key to core')
     } catch (e) {
-      // core.debugLevel(0, 'Unable to write key to core. Storing in localStorage')
       window.localStorage.setItem('simplex_user_id', id)
     }
   }
@@ -174,7 +170,6 @@ const encode = params => {
 
 export async function requestSellQuote (params) {
   requestAbort()
-  console.log('requestSellQuote ', params)
   const data = {
     method: 'GET',
     headers: {
@@ -182,34 +177,28 @@ export async function requestSellQuote (params) {
       'Content-Type': 'application/json'
     }
   }
-  console.log('request quote url.', edgeUrl + '/sell/quote/?' + encode(params))
   lastRequest = cancelableFetch(edgeUrl + '/sell/quote/?' + encode(params), data)
   return lastRequest.promise
 }
 
 export async function initiateSell (quote) {
   requestAbort()
-  console.log('API initiateSell  ---  quote', quote)
-  console.log('API initiateSell refundAddress', quote.refund_address)
   const userId = await getUserId()
+  const d = {
+    quote,
+    refund_crypto_address: quote.refund_address,
+    user_id: userId,
+    return_url: RETURN_URL
+  }
   const data = {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      quote,
-      refund_crypto_address: quote.refund_address,
-      user_id: userId,
-      return_url: RETURN_URL
-    })
+    body: JSON.stringify(d)
   }
-  console.log('API initiateSell data', data)
-  console.log('API initiateSell data', data)
-  console.log(' API: ', edgeUrl + '/sell/initiate/')
   lastRequest = cancelableFetch(edgeUrl + '/sell/initiate/', data)
-  console.log(' lastRequest: ', lastRequest)
   return lastRequest.promise
 }
 export async function executionOrderNotifyStatus (executionOrder, status, cryptoAmountSent, txnHash) {
