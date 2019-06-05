@@ -9,7 +9,6 @@ const root = document.getElementById('root')
 
 function mountTheApp () {
   if (root !== null) {
-    console.log('do the app thing')
     ReactDOM.render(<App />, root)
   }
 }

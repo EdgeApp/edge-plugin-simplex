@@ -60,7 +60,6 @@ class SellScene extends Component<Props> {
   }
 
   handleAccept = async (quote: Quote) => {
-    console.log('Sell Scene HandleAccept quote', quote)
     const data = await API.initiateSell(quote) // TODO: Get refund address from the wallet
     const transaction = await data.json()
     if (transaction.err) {

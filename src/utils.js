@@ -38,13 +38,10 @@ export function formatStatus (status) {
 }
 
 export const cancelableFetch = (url, data) => {
-  console.log('cancelable fetch url', url)
-  console.log('cancelable fetch data', data)
   let canceled = false
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       if (canceled) {
-        console.log('cancelabled ')
         reject({ isCanceled: true })
       } else {
         window
@@ -60,7 +57,6 @@ export const cancelableFetch = (url, data) => {
       }
     }, 250)
   })
-  console.log('cancelable fetch ready to return promise. ')
   return {
     promise,
     cancel () {
@@ -90,23 +86,15 @@ export const describeSpend = executionOrder => {
 }
 
 export async function retrieveAddress () {
-  console.log('retrieveAddress ')
   let address = null
   try {
     const addressData = await window.edgeProvider.getReceiveAddress()
-    console.log('retrieveAddress I got it ', address)
     address = addressData.address.legacyAddress
     if (!address) {
       address = addressData.address.publicAddress
     }
     return address
   } catch (e) {
-    console.log('well this is bad ')
-    /* if (counter === 3) {
-      throw new Error('this is failing ')
-    }
-    counter++
-    setTimeout(retrieveAddress, 500, counter) */
     return null
   }
 }

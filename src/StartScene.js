@@ -58,8 +58,7 @@ class StartScene extends Component<Props, State> {
     window.localStorage.removeItem('last_fiat_amount')
   }
   componentDidMount () {
-    console.log('Component Did Mount')
-    setTimeout(this.fetchPendingExecutionOrders, 500)
+    setTimeout(this.fetchPendingExecutionOrders, 1500)
   }
   fetchPendingExecutionOrders = async () => {
     const data = await API.getPendingExecutionOrders()

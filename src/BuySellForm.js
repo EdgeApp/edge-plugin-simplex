@@ -5,7 +5,7 @@ import * as API from './api'
 
 import Card, { CardContent } from 'material-ui/Card'
 import { DailyLimit, PoweredBy, Support } from './components'
-import type { Quote, QuoteAndRate } from './types'
+import type { Quote, QuoteAndRate, WalletDetails } from './types'
 import React, { Component } from 'react'
 import { convertFromMillionsUnits, formatRate, setCryptoInput, setFiatInput } from './utils'
 
@@ -18,13 +18,6 @@ import Typography from 'material-ui/Typography'
 import styles from './FormStyles'
 import { withStyles } from 'material-ui/styles'
 
-type WalletDetails = {
-  name: string,
-  receiveAddress: {
-    publicAddress: string
-  },
-  currencyCode: string
-}
 // wallets: PropTypes.array,
 type Props = {
   classes: Object,
@@ -261,11 +254,8 @@ class BuySellForm extends Component<Props, State> {
   }
 
   handleAccept = async () => {
-    console.log('BuySell HandleAccept')
     try {
       const { wallet, quote } = this.state
-      console.log('BuySell HandleAccept wallet', wallet)
-      console.log('BuySell HandleAccept quote', quote)
       if (quote && wallet) {
         quote.refund_address = wallet.receiveAddress.publicAddress
         await this.props.handleAccept(quote)

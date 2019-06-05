@@ -1,4 +1,4 @@
-import { edgeUrl, simplexUrl } from './config'
+import { edgeLegacyBuyUrl, edgeSimplexBuyUrl, edgeUrl } from './config'
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -52,7 +52,6 @@ export function sessionId () {
 }
 
 export async function getUserId () {
-  console.log('getUserId starting')
   let id = null
   let inCore = true
   try {
@@ -130,7 +129,7 @@ export async function requestConfirm (sessionId, uaid, quote) {
     },
     body: JSON.stringify(body)
   }
-  lastRequest = cancelableFetch(edgeUrl + '/partner/data', data)
+  lastRequest = cancelableFetch(edgeLegacyBuyUrl + '/partner/data', data)
   return lastRequest.promise
 }
 
@@ -154,7 +153,7 @@ export async function requestQuote (requested, amount, digitalCurrency, fiatCurr
     })
   }
   // Issue a new request
-  lastRequest = cancelableFetch(edgeUrl + '/quote', data)
+  lastRequest = cancelableFetch(edgeLegacyBuyUrl + '/quote', data)
   return lastRequest.promise
 }
 
@@ -300,7 +299,7 @@ export async function sellDetails (sellId) {
 
 export const SimplexForm = props => {
   return (
-    <form id="payment_form" action={simplexUrl} method="POST" target="_self">
+    <form id="payment_form" action={edgeSimplexBuyUrl} method="POST" target="_self">
       <input type="hidden" name="version" value={props.quote.version} />
       <input type="hidden" name="partner" value={props.quote.partner} />
       <input type="hidden" name="payment_flow_type" value={props.quote.payment_flow_type} />
