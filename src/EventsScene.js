@@ -1,14 +1,14 @@
+// @flow
 import './inline.css'
 
 import * as API from './api'
 
 import Card, { CardContent } from 'material-ui/Card'
 import { PaymentDetails, PoweredBy, Support } from './components'
+import React, {Component} from 'react'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Grid from 'material-ui/Grid'
-import PropTypes from 'prop-types'
-import React from 'react'
 import Typography from 'material-ui/Typography'
 import { formatStatus } from './utils'
 import moment from 'moment'
@@ -35,7 +35,16 @@ const eventStyles = theme => ({
   }
 })
 
-class EventsScene extends React.Component {
+type Props = {
+  classes: Object,
+  match: Object
+}
+type State = {
+  details: Object,
+  loaded: boolean,
+  error: string | null
+}
+class EventsScene extends Component<Props, State> {
   constructor (props) {
     super(props)
     this.state = {
@@ -143,11 +152,6 @@ class EventsScene extends React.Component {
       </div>
     )
   }
-}
-
-EventsScene.propTypes = {
-  classes: PropTypes.object,
-  match: PropTypes.object
 }
 
 export default withStyles(eventStyles)(EventsScene)

@@ -1,20 +1,19 @@
+// @flow
 import './inline.css'
 
 import * as API from './api'
 
 import Card, { CardContent } from 'material-ui/Card'
 import { PoweredBy, Support } from './components'
+import React, { Component } from 'react'
 
 import AppBar from 'material-ui/AppBar'
 import { CircularProgress } from 'material-ui/Progress'
 import Grid from 'material-ui/Grid'
-import PropTypes from 'prop-types'
-import React from 'react'
 import Tab from 'material-ui/Tabs/Tab'
 import Tabs from 'material-ui/Tabs/Tabs'
 import { TransactionRow } from './components/TransactionRow'
 import Typography from 'material-ui/Typography'
-import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
 const eventStyles = theme => ({
@@ -36,8 +35,16 @@ const eventStyles = theme => ({
     overflow: 'scroll'
   }
 })
-
-class TransactionsScene extends React.Component {
+type Props = {
+  classes: Object,
+  history: Object
+}
+type State = {
+  currentTab: number,
+  transactions: Array<any>,
+  loaded: boolean
+}
+class TransactionsScene extends Component<Props, State> {
   constructor (props) {
     super(props)
     this.state = {
@@ -49,7 +56,7 @@ class TransactionsScene extends React.Component {
 
   UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    ui.title('Transactions')
+    // TODO title ui.title('Transactions')
     this.loadTransactions(this.getTransactionType(this.state.currentTab))
   }
 
@@ -154,11 +161,6 @@ class TransactionsScene extends React.Component {
       </div>
     )
   }
-}
-
-TransactionsScene.propTypes = {
-  classes: PropTypes.object,
-  history: PropTypes.object
 }
 
 export default withStyles(eventStyles)(TransactionsScene)
