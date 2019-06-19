@@ -7,7 +7,6 @@ import { CircularProgress } from 'material-ui/Progress'
 import { ConfirmDialog } from './ConfirmDialog'
 import { EdgeButton } from './EdgeButton'
 import { describeSpend } from '../utils'
-import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
 const pendingStyles = theme => ({
@@ -24,6 +23,11 @@ const pendingStyles = theme => ({
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column'
+  },
+  error: {
+    backgroundColor: '#f8d7da',
+    color: '#000',
+    padding: '3px 6px'
   }
 })
 
@@ -35,7 +39,8 @@ type Props = {
 type State = {
   executionOrder: Object,
   displayConfirmDialog: boolean,
-  pending: boolean
+  pending: boolean,
+  error: string | null
 }
 class PendingSellUnstyled extends Component<Props, State> {
   constructor (props) {
@@ -43,7 +48,8 @@ class PendingSellUnstyled extends Component<Props, State> {
     this.state = {
       executionOrder: this.props.executionOrder,
       displayConfirmDialog: false,
-      pending: false
+      pending: false,
+      error: null
     }
   }
   _cancel = async () => {
@@ -53,7 +59,9 @@ class PendingSellUnstyled extends Component<Props, State> {
     try {
       await API.executionOrderNotifyStatus(this.state.executionOrder, 'cancelled')
     } catch (e) {
-      ui.showAlert(false, 'Error', 'Unable to cancel transaction at this time.')
+      this.setState({
+        error: 'Unable to cancel transaction at this time.'
+      })
     }
     this._refreshExecutionOrder(this.state.executionOrder.id)
     this._closeDialog()
@@ -98,6 +106,14 @@ class PendingSellUnstyled extends Component<Props, State> {
     await this._sendNotify(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
   }
 
+  renderError = () => {
+    if (this.state.error) {
+      return <div className={this.props.classes.error}>
+        <p>{this.state.error}</p>
+      </div>
+    }
+    return null
+  }
   render () {
     const getBody = () => {
       switch (executionOrder.status) {
@@ -154,6 +170,7 @@ class PendingSellUnstyled extends Component<Props, State> {
               onAccept={this._closeDialog}
             />
           )}
+          {this.renderError()}
           {body}
         </div>
       )

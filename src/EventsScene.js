@@ -12,7 +12,6 @@ import Grid from 'material-ui/Grid'
 import Typography from 'material-ui/Typography'
 import { formatStatus } from './utils'
 import moment from 'moment'
-import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
 const eventStyles = theme => ({
@@ -56,7 +55,6 @@ class EventsScene extends Component<Props, State> {
 
   UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    ui.title('Payment History')
     this.loadEvents()
   }
 

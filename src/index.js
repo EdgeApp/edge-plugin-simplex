@@ -21,9 +21,14 @@ function getEdgeProvider (callback: Function) {
     })
   }
 }
-function isEdge () {
+/* function isEdge () {
   if (window.navigator.userAgent.indexOf('app.edge') >= 0) {
     getEdgeProvider(mountTheApp)
   }
 }
-setTimeout(isEdge, 500)
+
+setTimeout(isEdge, 500) */
+
+if (window.navigator.userAgent.indexOf('app.edge') >= 0) {
+  getEdgeProvider(mountTheApp)
+}

@@ -11,7 +11,6 @@ import { EdgeButton } from './components/EdgeButton'
 import Grid from 'material-ui/Grid'
 import { StartHeader } from './components/StartHeader'
 import { StartParagraph } from './components/StartParagraph'
-import { ui } from 'edge-libplugin'
 import { withStyles } from 'material-ui/styles'
 
 const startStyles = theme => ({
@@ -52,7 +51,6 @@ class StartScene extends Component<Props, State> {
     }
   }
   UNSAFE_componentWillMount () {
-    ui.title('Buy with Simplex - 1')
     window.scrollTo(0, 0)
     window.localStorage.removeItem('last_crypto_amount')
     window.localStorage.removeItem('last_fiat_amount')
@@ -76,6 +74,7 @@ class StartScene extends Component<Props, State> {
   _gotoEvents = () => {
     this.props.history.push('/transactions/')
   }
+
   render () {
     const classes = this.props.classes
     return (

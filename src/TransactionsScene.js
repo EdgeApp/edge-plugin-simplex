@@ -56,7 +56,6 @@ class TransactionsScene extends Component<Props, State> {
 
   UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    // TODO title ui.title('Transactions')
     this.loadTransactions(this.getTransactionType(this.state.currentTab))
   }
 

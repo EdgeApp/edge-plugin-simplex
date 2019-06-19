@@ -100,6 +100,11 @@ const buyStyles = theme => ({
     color: '#999',
     paddingBottom: '10px',
     textAlign: 'center'
+  },
+  error: {
+    backgroundColor: '#f8d7da',
+    color: '#000',
+    padding: '10px 20px'
   }
 })
 
@@ -118,7 +123,8 @@ type State = {
   fiatLoading: boolean,
   cryptoLoading: boolean,
   fiat: string,
-  defaultFiat: string
+  defaultFiat: string,
+  error: string | null
 }
 class BuyScene extends Component<Props, State> {
   sessionId: string
@@ -141,16 +147,13 @@ class BuyScene extends Component<Props, State> {
       cryptoLoading: false,
       fiat: 'USD',
       defaultFiat: 'USD',
-      wallet: null
+      wallet: null,
+      error: null
     }
   }
 
   UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
-    /* if (this.state.wallets.length > 0) {
-      this.selectWallet(this.state.wallets[0])
-    }
-    this.loadWallets() */
   }
 
   loadConversion = async () => {
@@ -163,8 +166,9 @@ class BuyScene extends Component<Props, State> {
       const quoteRate = await buildObject(parsed.res, wallet)
       this.setState({ rate: quoteRate.rate.rate })
     } catch (e) {
-      // TODO Surface Error
-      //  ui.showAlert(false, 'Error', 'Unable to retrieve rates. Please try again later.')
+      this.setState({
+        error: 'Unable to retrieve rates. Please try again later.'
+      })
     }
   }
 
@@ -231,7 +235,6 @@ class BuyScene extends Component<Props, State> {
             setFiatInput('')
             setCryptoInput('')
             this.getWalletDetails()
-            // TODO ui.title(`Buy ${wallet.currencyCode}`)
           }
         )
       })
@@ -484,6 +487,19 @@ class BuyScene extends Component<Props, State> {
     }
     return null
   }
+  renderError = (errors: Object) => {
+    if (errors.error) {
+      return <div className={this.props.classes.error}>
+        <p>{errors.helperText}</p>
+      </div>
+    }
+    if (this.state.error) {
+      return <div className={this.props.classes.error}>
+        <p>{this.state.error}</p>
+      </div>
+    }
+    return null
+  }
   render () {
     const { fiat, quote } = this.state
     let errors = {
@@ -504,6 +520,7 @@ class BuyScene extends Component<Props, State> {
     }
     return (
       <div>
+        {this.renderError(errors)}
         {this.renderConfirmDialog()}
         {this.renderFiatSupportWarning()}
         {this.renderConversionCard()}
