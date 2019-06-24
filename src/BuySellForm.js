@@ -48,7 +48,7 @@ class BuySellForm extends Component<Props, State> {
   constructor (props) {
     super(props)
     this.state = {
-      currentWalletCurrencyCode: null,
+      currentWalletCurrencyCode: 'BTC',
       dialogOpen: false,
       rate: null,
       quote: null,
@@ -60,9 +60,10 @@ class BuySellForm extends Component<Props, State> {
       error: null,
       wallet: null
     }
+    this.loadConversion()
   }
 
-  UNSAFE_componentWillMount () {
+  componentDidMount () {
     window.scrollTo(0, 0)
     const lastWallet = window.localStorage.getItem('last_selected_wallet')
     if (lastWallet) {
@@ -77,6 +78,8 @@ class BuySellForm extends Component<Props, State> {
         setCryptoInput('')
         this.loadConversion()
       })
+    } else {
+      this.openWallets()
     }
   }
 
@@ -138,14 +141,14 @@ class BuySellForm extends Component<Props, State> {
       .then(result => {
         this.setState(
           {
-            currentWalletCurrencyCode: result,
+            currentWalletCurrencyCode: result/* ,
             rate: null,
-            quote: null
+            quote: null */
           },
           () => {
             window.localStorage.setItem('last_selected_currency', result)
-            setFiatInput('')
-            setCryptoInput('')
+            /*  setFiatInput('')
+            setCryptoInput('') */
             this.loadConversion()
             this.getWalletDetails()
           }
@@ -292,6 +295,10 @@ class BuySellForm extends Component<Props, State> {
       }
     }
     const buttonText = this.state.wallet ? 'Change Source Wallet' : 'Select Source Wallet'
+    // quote === null || errors.error || !this.state.wallet
+    console.log('Quote : ', quote)
+    console.log('errors.error : ', errors.error)
+    console.log('this.state.wallet : ', this.state.wallet)
     return (
       <div>
         {this.state.error && (
@@ -398,7 +405,7 @@ class BuySellForm extends Component<Props, State> {
             <Typography component="p" className={classes.p}>
               You will see a confirmation screen before you sell.
             </Typography>
-            <EdgeButton tabIndex={3} color="primary" onClick={this.next} disabled={quote === null || errors.error}>
+            <EdgeButton tabIndex={3} color="primary" onClick={this.next} disabled={quote === null || errors.error || !this.state.wallet}>
               Next
             </EdgeButton>
             <EdgeButton onClick={this.cancel} tabIndex={4}>

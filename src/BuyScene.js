@@ -152,8 +152,9 @@ class BuyScene extends Component<Props, State> {
     }
   }
 
-  UNSAFE_componentWillMount () {
+  componentDidMount () {
     window.scrollTo(0, 0)
+    this.openWallets()
   }
 
   loadConversion = async () => {
@@ -368,20 +369,23 @@ class BuyScene extends Component<Props, State> {
     return null
   }
   renderConversionCard = () => {
-    const { classes } = this.props
-    return <Card className={classes.card}>
-      <CardContent>
-        <Typography component="h3" className={classes.h3}>
-          Conversion Rate
-        </Typography>
-        {!this.state.rate && <CircularProgress size={25} />}
-        {this.state.rate && (
-          <Typography component="p" className={classes.conversion}>
-            1 {this.state.currentWalletCurrencyCode} = {this.state.rate} {this.state.fiat}
+    if (this.state.currentWalletCurrencyCode) {
+      const { classes } = this.props
+      return <Card className={classes.card}>
+        <CardContent>
+          <Typography component="h3" className={classes.h3}>
+            Conversion Rate
           </Typography>
-        )}
-      </CardContent>
-    </Card>
+          {!this.state.rate && <CircularProgress size={25} />}
+          {this.state.rate && (
+            <Typography component="p" className={classes.conversion}>
+              1 {this.state.currentWalletCurrencyCode} = {this.state.rate} {this.state.fiat}
+            </Typography>
+          )}
+        </CardContent>
+      </Card>
+    }
+    return null
   }
   renderDestinationDetails = () => {
     const { classes } = this.props
