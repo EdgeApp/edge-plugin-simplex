@@ -1,5 +1,5 @@
 // @flow
-const SANDBOX = true
+const SANDBOX = false
 
 export const edgeUrl = SANDBOX ? 'https://edge-sandbox.test-simplexcc.com' : 'https://edge-prod.simplex.com'
 
