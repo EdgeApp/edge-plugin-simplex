@@ -154,7 +154,6 @@ class BuyScene extends Component<Props, State> {
 
   componentDidMount () {
     window.scrollTo(0, 0)
-    this.openWallets()
   }
 
   loadConversion = async () => {
@@ -404,6 +403,9 @@ class BuyScene extends Component<Props, State> {
   renderAmountSelector = (errors) => {
     const { classes } = this.props
     const { fiat, wallet } = this.state
+    if (!this.state.currentWalletCurrencyCode) {
+      return null
+    }
     return <Card className={classes.card}>
       <CardContent>
         <Typography variant="headline" component="h3" className={classes.h3}>
@@ -462,6 +464,9 @@ class BuyScene extends Component<Props, State> {
   renderButtonCard = (errors: Object) => {
     const { classes } = this.props
     const { quote } = this.state
+    if (!this.state.currentWalletCurrencyCode) {
+      return null
+    }
     return <Card className={classes.card}>
       <CardContent>
         <Typography component="p" className={classes.p}>
