@@ -165,7 +165,7 @@ class BuyScene extends Component<Props, State> {
       const result = await API.requestQuote(c, 1, c, this.state.defaultFiat)
       const parsed = await result.json()
       const quoteRate = await buildObject(parsed.res, wallet)
-      this.setState({ rate: quoteRate.rate.rate })
+      this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100 })
     } catch (e) {
       this.setState({
         error: 'Unable to retrieve rates. Please try again later.'
@@ -273,7 +273,7 @@ class BuyScene extends Component<Props, State> {
         this.setState({
           fiatLoading: false,
           quote: result.quote,
-          rate: result.rate.rate
+          rate: Math.round(result.rate.rate * 100) / 100
         }, () => {
           setFiatInput(result.quote.fiat_amount)
         })
@@ -313,7 +313,7 @@ class BuyScene extends Component<Props, State> {
         this.setState({
           cryptoLoading: false,
           quote: result.quote,
-          rate: result.rate.rate
+          rate: Math.round(result.rate.rate * 100) / 100
         }, () => {
           setCryptoInput(result.quote.digital_amount)
         })

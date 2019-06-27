@@ -92,6 +92,7 @@ class BuySellForm extends Component<Props, State> {
         this.setState({ rate: fiatQuote.rate })
       }
     } catch (err) {
+      console.log('loadConversion ', err)
       this.errorHandler(err)
     }
   }
@@ -178,6 +179,7 @@ class BuySellForm extends Component<Props, State> {
           setFiatInput(fiatQuote.quote.fiat_amount)
         }
       } catch (err) {
+        console.log('calcFiat  Error', err)
         this.errorHandler(err)
       }
     } else {
@@ -217,6 +219,7 @@ class BuySellForm extends Component<Props, State> {
           setCryptoInput(r.quote.crypto_amount)
         }
       } catch (err) {
+        console.log('calcCrypto ', err)
         this.errorHandler(err)
       }
     } else {
@@ -247,6 +250,7 @@ class BuySellForm extends Component<Props, State> {
         errorMessage = `Amount is too small, should be at least ${convertFromMillionsUnits(limitAmount)} ${currency} or more.`
       }
     } catch (e) {
+      console.log('Error ', e)
       errorMessage = 'Unable to proceed. Please try again later.'
     }
     this.setState({
@@ -265,6 +269,7 @@ class BuySellForm extends Component<Props, State> {
         this.setState({ error: null, dialogOpen: false })
       }
     } catch (e) {
+      console.log('handleAccept ', e)
       this.errorHandler(e)
     }
   }
