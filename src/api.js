@@ -134,6 +134,10 @@ export async function requestConfirm (sessionId, uaid, quote) {
 }
 
 export async function requestQuote (requested, amount, digitalCurrency, fiatCurrency) {
+  /* window.edgeProvider.consoleLog('requested: ' + requested)
+  window.edgeProvider.consoleLog('amount: ' + amount)
+  window.edgeProvider.consoleLog('digitalCurrency: ' + digitalCurrency)
+  window.edgeProvider.consoleLog('fiatCurrency: ' + fiatCurrency) */
   const userId = await getUserId()
   // Abort any active requests
   requestAbort()

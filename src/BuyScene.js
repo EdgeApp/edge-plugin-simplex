@@ -515,12 +515,15 @@ class BuyScene extends Component<Props, State> {
       error: false,
       helperText: ''
     }
+    window.edgeProvider.consoleLog('Render Quote')
+    window.edgeProvider.consoleLog(quote)
     if (quote) {
-      if (quote.fiat_amount > API.LIMITS[fiat].daily) {
+      if (quote.fiat_total_amount_amount > API.LIMITS[fiat].daily) {
         errors = { error: true, helperText: 'Exceeding daily limit' }
-      } else if (quote.fiat_amount > API.LIMITS[fiat].monthly) {
+      } else if (quote.fiat_total_amount_amount > API.LIMITS[fiat].monthly) {
         errors = { error: true, helperText: 'Exceeding monthly limit' }
-      } else if (quote.fiat_amount < API.LIMITS[fiat].min) {
+      } else if (quote.fiat_total_amount_amount < API.LIMITS[fiat].min) {
+        window.edgeProvider.consoleLog('In the error ' + API.LIMITS[fiat].min)
         errors = {
           error: true,
           helperText: `Below the minimum of ${formatRate(API.LIMITS[fiat].min, fiat)}`
