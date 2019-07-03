@@ -515,8 +515,6 @@ class BuyScene extends Component<Props, State> {
       error: false,
       helperText: ''
     }
-    window.edgeProvider.consoleLog('Render Quote')
-    window.edgeProvider.consoleLog(quote)
     if (quote) {
       if (quote.fiat_total_amount_amount > API.LIMITS[fiat].daily) {
         errors = { error: true, helperText: 'Exceeding daily limit' }
