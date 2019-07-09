@@ -1,5 +1,5 @@
-import Button from 'material-ui/Button'
 // @flow
+import Button from 'material-ui/Button'
 import React from 'react'
 
 type Props = {
