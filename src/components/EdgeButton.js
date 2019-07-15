@@ -3,10 +3,11 @@ import Button from 'material-ui/Button'
 import React from 'react'
 
 type Props = {
-  color: string,
+  color?: string,
   onClick(): void,
   children: any,
-  disabled: boolean
+  disabled?: boolean,
+  tabIndex?: number
 }
 
 const EdgeButton = (props: Props) => {

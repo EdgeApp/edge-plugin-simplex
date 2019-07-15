@@ -54,12 +54,14 @@ export function sessionId () {
 export async function getUserId () {
   let id = null
   let inCore = true
-  try {
-    const obj = await window.edgeProvider.readData(['simplex_user_id'])
-    id = obj['simplex_user_id']
-  } catch (e) {
+
+  const obj = await window.edgeProvider.readData(['simplex_user_id'])
+  if (obj.simplex_user_id) {
+    id = obj.simplex_user_id
+  } else {
     inCore = false
   }
+
   if (!id) {
     id = window.localStorage.getItem('simplex_user_id')
   }
@@ -69,6 +71,7 @@ export async function getUserId () {
   if (!inCore) {
     try {
       await window.edgeProvider.writeData({'simplex_user_id': id})
+      window.localStorage.setItem('simplex_user_id', id)
     } catch (e) {
       window.localStorage.setItem('simplex_user_id', id)
     }

@@ -85,6 +85,9 @@ class PendingSellUnstyled extends Component<Props, State> {
     await this._refreshExecutionOrder(this.state.executionOrder.id)
     this.setState({ pending: false })
   }
+  sendFundsWrapper = () => {
+    this._sendFunds()
+  }
   _sendFunds = async () => {
     const executionOrder = this.state.executionOrder
     if (!executionOrder) {
@@ -136,7 +139,7 @@ class PendingSellUnstyled extends Component<Props, State> {
                 <strong>{describeSpend(this.state.executionOrder)}</strong> to the broker.
               </p>
               <div>
-                <EdgeButton color="primary" onClick={this._sendFunds}>
+                <EdgeButton color="primary" onClick={this.sendFundsWrapper}>
                   Approve
                 </EdgeButton>
                 <EdgeButton color="secondary" onClick={this._showDialog}>

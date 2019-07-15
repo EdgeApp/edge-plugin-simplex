@@ -45,5 +45,7 @@ export type WalletDetails = {
     publicAddress: string
   },
   currencyCode: string,
-  fiatCurrencyCode: string
+  fiatCurrencyCode: string,
+  currencyIcon: string,
+  currencyIconDark: string
 }
