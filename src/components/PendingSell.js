@@ -101,7 +101,12 @@ class PendingSellUnstyled extends Component<Props, State> {
     let edgeTransaction
     await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
     try {
-      edgeTransaction = await window.edgeProvider.requestSpend([info])
+      const metadata = {
+        name: 'Simplex',
+        category: 'Exchange:Sell ' + executionOrder.requested_digital_currency
+        // notes: 'TODO: Put fiat amount in here'
+      }
+      edgeTransaction = await window.edgeProvider.requestSpend([info], { metadata })
     } catch (e) {
       await this._sendNotify(executionOrder, 'failed')
       return
