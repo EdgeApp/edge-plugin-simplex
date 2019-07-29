@@ -98,10 +98,19 @@ class PendingSellUnstyled extends Component<Props, State> {
       publicAddress: executionOrder.destination_crypto_address.trim(),
       nativeAmount: Math.round(executionOrder.requested_digital_amount * 100).toString() // simplex amount in MicroBit
     }
+
+    // const edgeTransaction = await window.edgeProvider.requestSpend([info], { metadata })
+
     let edgeTransaction
     await window.edgeProvider.chooseCurrencyWallet([info.currencyCode])
+    const wallet = await window.edgeProvider.getCurrentWalletInfo()
+    const metadata = {
+      name: 'Simplex',
+      category: 'Exchange:Sell ' + info.currencyCode,
+      notes: 'Sell ' + info.currencyCode + ' from ' + wallet.name + ' to Simplex at address: ' + executionOrder.destination_crypto_address.trim() + '. Sell amount ' + executionOrder.fiat_amount + '. For assistance, please contact support@simplex.com.'
+    }
     try {
-      edgeTransaction = await window.edgeProvider.requestSpend([info])
+      edgeTransaction = await window.edgeProvider.requestSpend([info], { metadata })
     } catch (e) {
       await this._sendNotify(executionOrder, 'failed')
       return
