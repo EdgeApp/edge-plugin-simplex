@@ -116,7 +116,6 @@ class PendingSellUnstyled extends Component<Props, State> {
       return
     }
     await this._sendNotify(executionOrder, 'completed', executionOrder.requested_digital_amount, edgeTransaction.txid)
-    await window.edgeProvider.trackConversion()
   }
 
   renderError = () => {
