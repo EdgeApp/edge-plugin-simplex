@@ -18,7 +18,7 @@ const formatResponse = async (response: any, valueType: string, value: number, c
   let [fiatAmount, cryptoAmount] = [0, 0]
   if (valueType === 'fiat') {
     fiatAmount = value
-    cryptoAmount = value / res.rate
+    cryptoAmount = cryptoCode === 'BTC' ? Math.round((value / res.rate) * 1000000) / 1000000 : value / res.rate
   } else {
     cryptoAmount = value
     fiatAmount = value * res.rate
@@ -52,10 +52,12 @@ class SellScene extends Component<Props> {
   requestCryptoQuote = async (value: number, cryptoCode: string, fiatCode: string): any => {
     const data = await API.requestSellQuote({
       base_currency: cryptoCode,
-      quote_amount: convertToMillionsUnits(value),
+      quote_amount: convertToMillionsUnits(value, cryptoCode),
       quote_currency: fiatCode
     })
     const r = await data.json()
+    window.edgeProvider.consoleLog('Here is the conversion ')
+    window.edgeProvider.consoleLog(r)
     return formatResponse(r, 'fiat', value, cryptoCode, fiatCode)
   }
 
