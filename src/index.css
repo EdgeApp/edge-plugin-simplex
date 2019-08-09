@@ -4,6 +4,9 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   background-color: #F4F5F6;
 }
+textarea:focus, input:focus{
+  outline: none;
+}
 
 html,
 body,
