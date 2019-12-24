@@ -20,6 +20,16 @@ export const LIMITS = {
     min: 50,
     daily: 16972,
     monthly: 42431
+  },
+  JPY: {
+    min: 5500,
+    daily: 2056193,
+    monthly: 5140484
+  },
+  CAD: {
+    min: 66,
+    daily: 24725,
+    monthly: 61810
   }
 }
 
@@ -36,7 +46,7 @@ export const SUPPORTED_DIGITAL_CURRENCIES = [
 ]
 
 export const SUPPORTED_FIAT_CURRENCIES = [
-  'USD', 'EUR'
+  'USD', 'EUR', 'JPY', 'CAD'
 ]
 
 export const DEV = process.env.NODE_ENV === 'development'
