@@ -1,13 +1,15 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { HashRouter as Router, Route } from 'react-router-dom'
-import { withStyles, createMuiTheme } from 'material-ui/styles'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+// @flow
+import React, { Component } from 'react'
+import { Route, HashRouter as Router } from 'react-router-dom'
+import { createMuiTheme, withStyles } from 'material-ui/styles'
 
-import StartScene from './StartScene'
 import BuyScene from './BuyScene'
-import PaymentsScene from './PaymentsScene'
 import EventsScene from './EventsScene'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { PendingSellFromURL } from './components'
+import SellScene from './SellScene'
+import StartScene from './StartScene'
+import TransactionsScene from './TransactionsScene'
 
 const theme = createMuiTheme({
   palette: {
@@ -21,56 +23,69 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "'Source Sans Pro', sans-serif !important"
   },
-  shadows: ['none']
+  shadows: Array(25).fill('none')
 })
 
-export const routes = [{
-  path: '/',
-  main: StartScene,
-  exact: true
-}, {
-  path: '/buy/',
-  main: BuyScene,
-  exact: true
-}, {
-  path: '/payments/',
-  main: PaymentsScene,
-  exact: true
-}, {
-  path: '/events/:paymentId/',
-  main: EventsScene,
-  exact: true
-}]
+export const routes = [
+  {
+    path: '/',
+    main: StartScene,
+    exact: true
+  },
+  {
+    path: '/buy/',
+    main: BuyScene,
+    exact: true
+  },
+  {
+    path: '/sell/',
+    main: SellScene,
+    exact: true
+  },
+  {
+    path: '/sell/execution-orders/:executionOrderId',
+    main: PendingSellFromURL,
+    exact: true
+  },
+  {
+    path: '/transactions/',
+    main: TransactionsScene,
+    exact: true
+  },
+  {
+    path: '/:type/events/:transactionId/',
+    main: EventsScene,
+    exact: true
+  }
+]
 
-const appStyles = (theme) => ({
+const appStyles = theme => ({
   content: {
-    height: '100%'
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   }
 })
 
-class App extends React.Component {
+type Props = {
+  classes: Object
+}
+type State = {}
+
+class App extends Component<Props, State> {
   render () {
     return (
       <MuiThemeProvider theme={theme}>
         <Router>
           <div className={this.props.classes.content}>
             {routes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                exact={route.exact}
-                component={route.main}
-              />
+              <Route key={index} path={route.path} exact={route.exact} component={route.main} />
             ))}
           </div>
         </Router>
       </MuiThemeProvider>
     )
   }
-}
-
-App.propTypes = {
-  classes: PropTypes.object
 }
 
 export default withStyles(appStyles)(App)

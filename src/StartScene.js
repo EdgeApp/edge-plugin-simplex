@@ -1,15 +1,19 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Divider from 'material-ui/Divider'
-import Typography from 'material-ui/Typography'
-
+// @flow
 import './inline.css'
 
-import { ui } from 'edge-libplugin'
-import { EdgeButton, SupportLink } from './components'
+import * as API from './api'
 
-const startStyles = (theme) => ({
+import { PendingSell, SupportLink } from './components.js'
+import React, { Component } from 'react'
+
+import Divider from 'material-ui/Divider'
+import { EdgeButton } from './components/EdgeButton'
+import Grid from 'material-ui/Grid'
+import { StartHeader } from './components/StartHeader'
+import { StartParagraph } from './components/StartParagraph'
+import { withStyles } from 'material-ui/styles'
+
+const startStyles = theme => ({
   container: {
     backgroundColor: '#FFF',
     padding: '20px'
@@ -31,45 +35,46 @@ const startStyles = (theme) => ({
   }
 })
 
-const StartHeader = (props) => {
-  return (
-    <Typography variant="headline" component="h3" className={props.classes.h3}>
-      {props.text}
-    </Typography>
-  )
+type Props = {
+  classes: Object,
+  history: Object
+}
+type State = {
+  executionOrder: Object | null
 }
 
-StartHeader.propTypes = {
-  classes: PropTypes.object,
-  text: PropTypes.string
-}
-
-const StartParagraph = (props) => {
-  return (
-    <Typography component="p" className={props.classes.p}>
-      {props.children}
-    </Typography>
-  )
-}
-
-StartParagraph.propTypes = {
-  classes: PropTypes.object.isRequired,
-  children: PropTypes.node.isRequired
-}
-
-class StartScene extends React.Component {
-  componentWillMount () {
-    ui.title('Buy with Simplex')
+class StartScene extends Component<Props, State> {
+  constructor (props) {
+    super(props)
+    this.state = {
+      executionOrder: null
+    }
+  }
+  UNSAFE_componentWillMount () {
     window.scrollTo(0, 0)
     window.localStorage.removeItem('last_crypto_amount')
     window.localStorage.removeItem('last_fiat_amount')
   }
-  _start = () => {
+  componentDidMount () {
+    setTimeout(this.fetchPendingExecutionOrders, 1500)
+  }
+  fetchPendingExecutionOrders = async () => {
+    const data = await API.getPendingExecutionOrders()
+    const pendingExecutionOrders = await data.json()
+    if (pendingExecutionOrders) {
+      this.setState({ executionOrder: pendingExecutionOrders.res[0] })
+    }
+  }
+  _buy = () => {
     this.props.history.push('/buy/')
   }
-  _gotoEvents = () => {
-    this.props.history.push('/payments/')
+  _sell = () => {
+    this.props.history.push('/sell/')
   }
+  _gotoEvents = () => {
+    this.props.history.push('/transactions/')
+  }
+
   render () {
     const classes = this.props.classes
     return (
@@ -77,33 +82,18 @@ class StartScene extends React.Component {
         <div className="text-center">
           <div className="iconLogo" />
         </div>
+        {this.state.executionOrder && <PendingSell executionOrder={this.state.executionOrder} />}
         <div>
           <StartHeader text="Simplex" classes={classes} />
           <StartParagraph classes={classes}>
-            Simplex is an Edge Wallet bank card processing partner. It is the
-            service which allows you to purchase Bitcoin, Bitcoin Cash,
-            Ethereum, Litecoin and Ripple/XRP safely and quickly in just a few
-            short minutes.
+            Simplex is an Edge Wallet bank and card processing partner. It is the service which allows you to purchase Bitcoin, Bitcoin Cash, Ethereum, Litecoin
+            and Ripple/XRP and sell Bitcoin, Bitcoin Cash and Litecoin. You can do this safely and quickly in just a few short minutes.
           </StartParagraph>
-        </div>
-        <Divider className={classes.divider} />
-        <div>
-          <StartHeader text="Fee" classes={classes} />
-          <StartParagraph classes={classes}>
-            Please note that additional fees will be charged, on top of the
-            above rate at checkout. Those fees are as follows:
-          </StartParagraph>
-          <ul className={classes.feeList}>
-            <li>Edge Wallet 1%</li>
-            <li>Credit Card processing by Simplex 5% ($10 min)</li>
-          </ul>
         </div>
         <Divider className={classes.divider} />
         <div>
           <StartHeader text="Time" classes={classes} />
-          <StartParagraph classes={classes}>
-            Estimated transaction time is 30 minutes to 5 business days.
-          </StartParagraph>
+          <StartParagraph classes={classes}>Estimated transaction time is 30 minutes to 5 business days.</StartParagraph>
         </div>
         <Divider className={classes.divider} />
         <div>
@@ -114,17 +104,25 @@ class StartScene extends React.Component {
         </div>
         <Divider className={classes.divider} />
         <div>
-          <EdgeButton color="primary" onClick={this._start}>Next</EdgeButton>
-          <EdgeButton color="default" onClick={this._gotoEvents}>Transactions</EdgeButton>
+          <Grid container spacing={24}>
+            <Grid item xs>
+              <EdgeButton color="primary" onClick={this._buy}>
+                Buy Crypto
+              </EdgeButton>
+            </Grid>
+            <Grid item xs>
+              <EdgeButton color="secondary" onClick={this._sell}>
+                Sell Crypto
+              </EdgeButton>
+            </Grid>
+          </Grid>
+          <EdgeButton color="default" onClick={this._gotoEvents}>
+            Transactions
+          </EdgeButton>
         </div>
       </div>
     )
   }
-}
-
-StartScene.propTypes = {
-  history: PropTypes.object,
-  classes: PropTypes.object
 }
 
 export default withStyles(startStyles)(StartScene)
