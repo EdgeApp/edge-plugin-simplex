@@ -17,6 +17,7 @@ import Typography from 'material-ui/Typography'
 import { formatRate } from './utils'
 import uuidv1 from 'uuid/v1'
 import { withStyles } from 'material-ui/styles'
+import {SimplexForm} from './api'
 
 const setFiatInput = value => {
   setDomValue('fiatInput', value)
@@ -183,6 +184,7 @@ class BuyScene extends Component<Props, State> {
   }
 
   handleAccept = async () => {
+    console.log('SimplexForm.buyScene')
     API.requestConfirm(this.sessionId, this.uaid, this.state.quote)
       .then(data => data.json())
       .then(data => {
