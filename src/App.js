@@ -9,6 +9,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { PendingSellFromURL } from './components'
 import SellScene from './SellScene'
 import StartScene from './StartScene'
+import SuccessScene from './SuccessScene'
+import FailureScene from './FailureScene'
 import TransactionsScene from './TransactionsScene'
 
 const theme = createMuiTheme({
@@ -30,6 +32,16 @@ export const routes = [
   {
     path: '/',
     main: StartScene,
+    exact: true
+  },
+  {
+    path: '/success/',
+    main: SuccessScene,
+    exact: true
+  },
+  {
+    path: '/failure/',
+    main: FailureScene,
     exact: true
   },
   {

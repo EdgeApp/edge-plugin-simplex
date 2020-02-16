@@ -305,7 +305,8 @@ export async function sellDetails (sellId) {
 }
 
 export const SimplexForm = props => {
-  console.log('SimplexForm.api')
+  window.edgeProvider.consoleLog(`SimplexForm.api return_url:${props.quote.return_url}`)
+
   return (
     <form id="payment_form" action={edgeSimplexBuyUrl} method="POST" target="_self">
       <input type="hidden" name="version" value={props.quote.version} />

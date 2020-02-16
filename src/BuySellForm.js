@@ -27,7 +27,8 @@ type Props = {
   requestCryptoQuote(string, string, string): QuoteAndRate,
   requestFiatQuote(number, string, string): QuoteAndRate,
   handleAccept(Quote): void,
-  dialogMessage(Quote): void
+  dialogMessage(Quote): void,
+  location: any
 }
 
 type State = {
