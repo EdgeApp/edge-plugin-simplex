@@ -35,11 +35,40 @@ type State = {
 }
 
 class SuccessScene extends Component<Props, State> {
+
+  async componentDidMount () {
+    if (window && window.edgeProvider && window.edgeProvider.trackConversion) {
+      /*
+      const type EdgeTrackConversionOptions = {
+        // Currency code of the conversion amount
+        // I.e., "btc" or "iso:USD"
+        currencyCode: string,
+
+        // Amount of the conversion
+        amount: number,
+
+        // Unique orderID
+        orderId: string
+      }
+       */
+      // let searchStr = window.location.search
+      // searchStr = searchStr.replace('?', '')
+      // const keyValuePairs = searchStr.split('&')
+      //
+      const edgeTrackConversionOptions = {
+        currencyCode: 'USD',
+        amount: 12,
+        orderId: '1111111111'
+      };
+      await window.edgeProvider.trackConversion(edgeTrackConversionOptions)
+    }
+  }
+
   render () {
     const classes = this.props.classes
     return (
       <div className={classes.container}>
-        <h1>BUY SUCCESS</h1>
+        <h1>BUY SUCCEEDED</h1>
       </div>
     )
   }

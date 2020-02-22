@@ -17,7 +17,6 @@ import Typography from 'material-ui/Typography'
 import { formatRate } from './utils'
 import uuidv1 from 'uuid/v1'
 import { withStyles } from 'material-ui/styles'
-import {SimplexForm} from './api'
 
 const setFiatInput = value => {
   setDomValue('fiatInput', value)

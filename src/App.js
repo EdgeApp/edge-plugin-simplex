@@ -35,12 +35,12 @@ export const routes = [
     exact: true
   },
   {
-    path: '/success/',
+    path: '/success',
     main: SuccessScene,
     exact: true
   },
   {
-    path: '/failure/',
+    path: '/failure',
     main: FailureScene,
     exact: true
   },

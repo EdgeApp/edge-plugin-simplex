@@ -313,6 +313,8 @@ export const SimplexForm = props => {
       <input type="hidden" name="partner" value={props.quote.partner} />
       <input type="hidden" name="payment_flow_type" value={props.quote.payment_flow_type} />
       <input type="hidden" name="return_url" value={props.quote.return_url} />
+      <input type="hidden" name="return_url_success" value={`edge://plugin/simplex/success`} />
+      <input type="hidden" name="return_url_fail" value='edge://plugin/simplex/failure' />
       <input type="hidden" name="quote_id" value={props.quote.quote_id} />
       <input type="hidden" name="payment_id" value={props.quote.payment_id} />
       <input type="hidden" name="user_id" value={props.quote.user_id} />
