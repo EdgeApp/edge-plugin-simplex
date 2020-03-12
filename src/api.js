@@ -305,16 +305,18 @@ export async function sellDetails (sellId) {
 }
 
 export const SimplexForm = props => {
-  window.edgeProvider.consoleLog(`SimplexForm.api return_url:${props.quote.return_url}`)
-
+  const uri = 'https://www.edge.app/edgelogin'
+  // const uri = 'edge:///plugins/simplex/success'
+  // const uri = 'https://edge-app-deep-link-redirect.herokuapp.com/'
+  console.log(`simplex redirect: ${uri}`)
   return (
     <form id="payment_form" action={edgeSimplexBuyUrl} method="POST" target="_self">
       <input type="hidden" name="version" value={props.quote.version} />
       <input type="hidden" name="partner" value={props.quote.partner} />
       <input type="hidden" name="payment_flow_type" value={props.quote.payment_flow_type} />
-      <input type="hidden" name="return_url" value={props.quote.return_url} />
-      <input type="hidden" name="return_url_success" value={props.quote.return_url} />
-      <input type="hidden" name="return_url_fail" value={props.quote.return_url} />
+      <input type="hidden" name="return_url" value={uri} />
+      <input type="hidden" name="return_url_success" value={uri} />
+      <input type="hidden" name="return_url_fail" value={uri} />
       <input type="hidden" name="quote_id" value={props.quote.quote_id} />
       <input type="hidden" name="payment_id" value={props.quote.payment_id} />
       <input type="hidden" name="user_id" value={props.quote.user_id} />

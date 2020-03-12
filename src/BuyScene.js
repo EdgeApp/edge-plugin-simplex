@@ -188,6 +188,8 @@ class BuyScene extends Component<Props, State> {
       .then(data => data.json())
       .then(data => {
         // $FlowFixMe
+        console.log('simplex quote:', this.state.quote)
+        window.edgeProvider.simplexPluginQuote = this.state.quote
         document.getElementById('payment_form').submit()
       })
       .catch(err => {

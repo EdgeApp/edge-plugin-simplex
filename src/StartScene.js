@@ -76,6 +76,7 @@ class StartScene extends Component<Props, State> {
   }
 
   render () {
+    console.log('simplex window.edgeProvider.simplexPluginQuote:', window.edgeProvider.simplexPluginQuote)
     const classes = this.props.classes
     return (
       <div className={classes.container}>
