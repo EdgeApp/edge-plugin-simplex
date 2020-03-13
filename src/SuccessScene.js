@@ -59,7 +59,7 @@ class SuccessScene extends Component<Props, State> {
         currencyCode: 'USD',
         amount: 12,
         orderId: '1111111111'
-      };
+      }
       await window.edgeProvider.trackConversion(edgeTrackConversionOptions)
     }
   }

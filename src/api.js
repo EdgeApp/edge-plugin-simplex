@@ -306,7 +306,7 @@ export async function sellDetails (sellId) {
 
 export const SimplexForm = props => {
   // const uri = 'https://www.edge.app/edgelogin'
-  const uri = 'https://deep.edge.app/plugins/simplex/success'
+  const uri = `https://deep.edge.app/plugins/simplex/success?quote_id=${props.quote.quote_id}&currency=${props.quote.currency}&digital_amount=${props.quote.digital_amount}`
   // const uri = 'edge://plugins/simplex/success'
   // const uri = 'https://edge-app-deep-link-redirect.herokuapp.com/'
   console.log(`simplex redirect: ${uri}`)
