@@ -305,12 +305,16 @@ export async function sellDetails (sellId) {
 }
 
 export const SimplexForm = props => {
+  const baseUrl = 'https://developer.edge.app/content/conversiontracker.html'
+  const successUrl = `${baseUrl}?currency=${encodeURI(props.quote.currency)}&digital_amount=${encodeURI(props.quote.fiat_total_amount_amount)}&order_id=${encodeURI(props.quote.payment_id)}`
+  const failureUrl = `${baseUrl}?dont_track=true`
   return (
     <form id="payment_form" action={edgeSimplexBuyUrl} method="POST" target="_self">
       <input type="hidden" name="version" value={props.quote.version} />
       <input type="hidden" name="partner" value={props.quote.partner} />
       <input type="hidden" name="payment_flow_type" value={props.quote.payment_flow_type} />
-      <input type="hidden" name="return_url" value={props.quote.return_url} />
+      <input type="hidden" name="return_url_success" value={successUrl} />
+      <input type="hidden" name="return_url_fail" value={failureUrl} />
       <input type="hidden" name="quote_id" value={props.quote.quote_id} />
       <input type="hidden" name="payment_id" value={props.quote.payment_id} />
       <input type="hidden" name="user_id" value={props.quote.user_id} />

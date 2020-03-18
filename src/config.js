@@ -5,5 +5,5 @@ export const edgeUrl = SANDBOX ? 'https://edge-sandbox.test-simplexcc.com' : 'ht
 
 export const simplexUrl = SANDBOX ? 'https://sandbox.test-simplexcc.com/payments/new' : 'https://checkout.simplexcc.com/payments/new'
 
-export const edgeLegacyBuyUrl = /* SANDBOX ? 'https://simplex-sandbox-api.edgesecure.co' :  */'https://simplex-api.edgesecure.co'
-export const edgeSimplexBuyUrl = /* SANDBOX ? 'https://sandbox.test-simplexcc.com/payments/new' :  */'https://checkout.simplexcc.com/payments/new'
+export const edgeLegacyBuyUrl = SANDBOX ? 'https://simplex-sandbox-api.edgesecure.co' : 'https://simplex-api.edgesecure.co'
+export const edgeSimplexBuyUrl = SANDBOX ? 'https://sandbox.test-simplexcc.com/payments/new' : 'https://checkout.simplexcc.com/payments/new'
