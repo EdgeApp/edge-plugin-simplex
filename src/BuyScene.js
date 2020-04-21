@@ -161,7 +161,7 @@ class BuyScene extends Component<Props, State> {
     if (!wallet) return
     try {
       const c = wallet.currencyCode
-      const result = await API.requestQuote(c, 1, c, this.state.defaultFiat)
+      const result = await API.requestQuote(c, 1, c, this.state.fiat)
       const parsed = await result.json()
       const quoteRate = await buildObject(parsed.res, wallet)
       this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100 })
@@ -266,7 +266,7 @@ class BuyScene extends Component<Props, State> {
       const v = event.target.value
       const c = this.state.wallet.currencyCode
       try {
-        const quote = await API.requestQuote(c, v, c, this.state.defaultFiat)
+        const quote = await API.requestQuote(c, v, c, this.state.fiat)
         const parseQuote = await quote.json()
         const result = await buildObject(parseQuote.res, this.state.wallet)
         this.setState({
@@ -306,7 +306,7 @@ class BuyScene extends Component<Props, State> {
       const v = event.target.value
       const c = this.state.wallet.currencyCode
       try {
-        const quote = await API.requestQuote(this.state.defaultFiat, v, c, this.state.defaultFiat)
+        const quote = await API.requestQuote(this.state.fiat, v, c, this.state.fiat)
         const parseQuote = await quote.json()
         const result = await buildObject(parseQuote.res, this.state.wallet)
         this.setState({
