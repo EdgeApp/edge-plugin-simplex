@@ -161,7 +161,7 @@ class BuyScene extends Component<Props, State> {
     if (!wallet) return
     try {
       const c = wallet.currencyCode
-      const result = await API.requestQuote(c, 1, c, this.state.defaultFiat)
+      const result = await API.requestQuote(c, 1, c, this.state.fiat)
       const parsed = await result.json()
       const quoteRate = await buildObject(parsed.res, wallet)
       this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100 })
@@ -266,7 +266,7 @@ class BuyScene extends Component<Props, State> {
       const v = event.target.value
       const c = this.state.wallet.currencyCode
       try {
-        const quote = await API.requestQuote(c, v, c, this.state.defaultFiat)
+        const quote = await API.requestQuote(c, v, c, this.state.fiat)
         const parseQuote = await quote.json()
         const result = await buildObject(parseQuote.res, this.state.wallet)
         this.setState({
@@ -306,7 +306,7 @@ class BuyScene extends Component<Props, State> {
       const v = event.target.value
       const c = this.state.wallet.currencyCode
       try {
-        const quote = await API.requestQuote(this.state.defaultFiat, v, c, this.state.defaultFiat)
+        const quote = await API.requestQuote(this.state.fiat, v, c, this.state.fiat)
         const parseQuote = await quote.json()
         const result = await buildObject(parseQuote.res, this.state.wallet)
         this.setState({
@@ -362,6 +362,25 @@ class BuyScene extends Component<Props, State> {
         <select defaultValue={fiat} onChange={this.changeDefaultFiat}>
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="ILS">ILS</option>
+          <option value="TRY">TRY</option>
+          <option value="CAD">CAD</option>
+          <option value="CHF">CHF</option>
+          <option value="KRW">KRW</option>
+          <option value="JPY">JPY</option>
+          <option value="RUB">RUB</option>
+          <option value="AUD">AUD</option>
+          <option value="CZK">CZK</option>
+          <option value="NOK">NOK</option>
+          <option value="DKK">DKK</option>
+          <option value="NZD">NZD</option>
+          <option value="SEK">SEK</option>
+          <option value="ZAR">ZAR</option>
+          <option value="HUF">HUF</option>
+          <option value="PLN">PLN</option>
+          <option value="INR">INR</option>
+          <option value="AED">AED</option>
         </select>
       </Typography>
     }
