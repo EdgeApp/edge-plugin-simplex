@@ -19,6 +19,101 @@ export const LIMITS = {
     min: 50,
     daily: 16972,
     monthly: 42431
+  },
+  GBP: {
+    min: 40,
+    daily: 16273,
+    monthly: 40683
+  },
+  ILS: {
+    min: 177,
+    daily: 71068,
+    monthly: 177670
+  },
+  TRY: {
+    min: 346,
+    daily: 139848,
+    monthly: 349620
+  },
+  CAD: {
+    min: 70,
+    daily: 28396,
+    monthly: 70991
+  },
+  CHF: {
+    min: 48,
+    daily: 19370,
+    monthly: 48426
+  },
+  KRW: {
+    min: 61098,
+    daily: 24679600,
+    monthly: 61699000
+  },
+  JPY: {
+    min: 5439,
+    daily: 2150840,
+    monthly: 5377100
+  },
+  RUB: {
+    min: 3830,
+    daily: 1543656,
+    monthly: 3859140
+  },
+  AUD: {
+    min: 78,
+    daily: 31853,
+    monthly: 79633
+  },
+  CZK: {
+    min: 1152,
+    daily: 506296,
+    monthly: 1265740
+  },
+  NOK: {
+    min: 530,
+    daily: 211773,
+    monthly: 529433
+  },
+  DKK: {
+    min: 343,
+    daily: 137280,
+    monthly: 343201
+  },
+  NZD: {
+    min: 82,
+    daily: 33587,
+    monthly: 83968
+  },
+  SEK: {
+    min: 500,
+    daily: 202004,
+    monthly: 505010
+  },
+  ZAR: {
+    min: 939,
+    daily: 380211,
+    monthly: 950527
+  },
+  HUF: {
+    min: 16241,
+    daily: 6511770,
+    monthly: 16279425
+  },
+  PLN: {
+    min: 207,
+    daily: 83575,
+    monthly: 208938
+  },
+  INR: {
+    min: 3794,
+    daily: 1539400,
+    monthly: 3848500
+  },
+  AED: {
+    min: 183,
+    daily: 419106,
+    monthly: 1047766
   }
 }
 export const SELL_LIMITS = {
@@ -39,7 +134,7 @@ export function requestAbort () {
 
 export const SUPPORTED_DIGITAL_CURRENCIES = ['BTC', 'ETH', 'BCH', 'LTC', 'XRP']
 
-export const SUPPORTED_FIAT_CURRENCIES = ['USD', 'EUR']
+export const SUPPORTED_FIAT_CURRENCIES = ['USD', 'EUR', 'GBP', 'ILS', 'TRY', 'CAD', 'CHF', 'KRW', 'JPY', 'RUB', 'AUD', 'CZK', 'NOK', 'DKK', 'NZD', 'SEK', 'ZAR', 'HUF', 'PLN', 'INR', 'AED']
 
 export const SUPPORTED_SELL_FIAT_CURRENCIES = ['EUR']
 

@@ -362,6 +362,25 @@ class BuyScene extends Component<Props, State> {
         <select defaultValue={fiat} onChange={this.changeDefaultFiat}>
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="ILS">ILS</option>
+          <option value="TRY">TRY</option>
+          <option value="CAD">CAD</option>
+          <option value="CHF">CHF</option>
+          <option value="KRW">KRW</option>
+          <option value="JPY">JPY</option>
+          <option value="RUB">RUB</option>
+          <option value="AUD">AUD</option>
+          <option value="CZK">CZK</option>
+          <option value="NOK">NOK</option>
+          <option value="DKK">DKK</option>
+          <option value="NZD">NZD</option>
+          <option value="SEK">SEK</option>
+          <option value="ZAR">ZAR</option>
+          <option value="HUF">HUF</option>
+          <option value="PLN">PLN</option>
+          <option value="INR">INR</option>
+          <option value="AED">AED</option>
         </select>
       </Typography>
     }
