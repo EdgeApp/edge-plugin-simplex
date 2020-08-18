@@ -132,7 +132,7 @@ export function requestAbort () {
   }
 }
 
-export const SUPPORTED_DIGITAL_CURRENCIES = ['BTC', 'ETH', 'BCH', 'LTC', 'XRP']
+export const SUPPORTED_DIGITAL_CURRENCIES = ['BTC', 'ETH', 'BCH', 'LTC', 'XRP', 'BSV']
 
 export const SUPPORTED_FIAT_CURRENCIES = ['USD', 'EUR', 'GBP', 'ILS', 'TRY', 'CAD', 'CHF', 'KRW', 'JPY', 'RUB', 'AUD', 'CZK', 'NOK', 'DKK', 'NZD', 'SEK', 'ZAR', 'HUF', 'PLN', 'INR', 'AED']
 
