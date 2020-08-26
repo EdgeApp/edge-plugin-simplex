@@ -16,104 +16,104 @@ export const LIMITS = {
     monthly: 47000
   },
   EUR: {
-    min: 50,
-    daily: 16972,
-    monthly: 42431
+    min: 42.35,
+    daily: 15923.6,
+    monthly: 39809
   },
   GBP: {
-    min: 40,
-    daily: 16273,
-    monthly: 40683
+    min: 38.15,
+    daily: 14344.4,
+    monthly: 35861
   },
   ILS: {
-    min: 177,
-    daily: 71068,
-    monthly: 177670
+    min: 170,
+    daily: 63920,
+    monthly: 159800
   },
   TRY: {
-    min: 346,
-    daily: 139848,
-    monthly: 349620
+    min: 368,
+    daily: 138368,
+    monthly: 345920
   },
   CAD: {
-    min: 70,
-    daily: 28396,
-    monthly: 70991
+    min: 66,
+    daily: 24816,
+    monthly: 62040
   },
   CHF: {
-    min: 48,
-    daily: 19370,
-    monthly: 48426
+    min: 45.5,
+    daily: 17108,
+    monthly: 42770
   },
   KRW: {
-    min: 61098,
-    daily: 24679600,
-    monthly: 61699000
+    min: 59315,
+    daily: 22302440,
+    monthly: 55756100
   },
   JPY: {
-    min: 5439,
-    daily: 2150840,
-    monthly: 5377100
+    min: 5292.5,
+    daily: 1989980,
+    monthly: 4974950
   },
   RUB: {
-    min: 3830,
-    daily: 1543656,
-    monthly: 3859140
+    min: 3721,
+    daily: 1399096,
+    monthly: 3497740
   },
   AUD: {
-    min: 78,
-    daily: 31853,
-    monthly: 79633
+    min: 69.5,
+    daily: 26132,
+    monthly: 65330
   },
   CZK: {
-    min: 1152,
-    daily: 506296,
-    monthly: 1265740
+    min: 1103.5,
+    daily: 414916,
+    monthly: 1037290
   },
   NOK: {
-    min: 530,
-    daily: 211773,
-    monthly: 529433
+    min: 449.5,
+    daily: 169012,
+    monthly: 422530
   },
   DKK: {
-    min: 343,
-    daily: 137280,
-    monthly: 343201
+    min: 314.5,
+    daily: 118252,
+    monthly: 295630
   },
   NZD: {
-    min: 82,
-    daily: 33587,
-    monthly: 83968
+    min: 76.5,
+    daily: 28764,
+    monthly: 71910
   },
   SEK: {
-    min: 500,
-    daily: 202004,
-    monthly: 505010
+    min: 438.5,
+    daily: 164876,
+    monthly: 412190
   },
   ZAR: {
-    min: 939,
-    daily: 380211,
-    monthly: 950527
+    min: 849,
+    daily: 319224,
+    monthly: 798060
   },
   HUF: {
-    min: 16241,
-    daily: 6511770,
-    monthly: 16279425
+    min: 14839.5,
+    daily: 5579652,
+    monthly: 13949130
   },
   PLN: {
-    min: 207,
-    daily: 83575,
-    monthly: 208938
+    min: 186,
+    daily: 69936,
+    monthly: 174840
   },
   INR: {
-    min: 3794,
-    daily: 1539400,
-    monthly: 3848500
+    min: 3711.5,
+    daily: 1395524,
+    monthly: 3488810
   },
   AED: {
-    min: 183,
-    daily: 419106,
-    monthly: 1047766
+    min: 183.5,
+    daily: 68996,
+    monthly: 172490
   }
 }
 export const SELL_LIMITS = {
