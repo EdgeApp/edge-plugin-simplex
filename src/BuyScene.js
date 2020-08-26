@@ -35,7 +35,7 @@ const setDomValue = (id, value) => {
 
 const buildObject = async (res, wallet) => {
   if (!res.quote_id) {
-    throw new Error('Invalid response')
+    throw new Error(res.error)
   }
   let address = null
   const addressData = await window.edgeProvider.getReceiveAddress()
@@ -157,11 +157,12 @@ class BuyScene extends Component<Props, State> {
   }
 
   loadConversion = async () => {
-    const { wallet } = this.state
+    const { wallet, fiat } = this.state
     if (!wallet) return
     try {
       const c = wallet.currencyCode
-      const result = await API.requestQuote(c, 1, c, this.state.fiat)
+      // Use minimum fiat amount in order to return a quote from Simplex for initial conversion rate. Double it to avoid issues with outdated hardcoded limits.
+      const result = await API.requestQuote(fiat, API.LIMITS[fiat].min * 2, c, fiat)
       const parsed = await result.json()
       const quoteRate = await buildObject(parsed.res, wallet)
       this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100 })
@@ -272,11 +273,13 @@ class BuyScene extends Component<Props, State> {
         this.setState({
           fiatLoading: false,
           quote: result.quote,
-          rate: Math.round(result.rate.rate * 100) / 100
+          rate: Math.round(result.rate.rate * 100) / 100,
+          error: undefined
         }, () => {
           setFiatInput(result.quote.fiat_amount)
         })
       } catch (e) {
+        this.setState({error: e.message})
         console.log('calcFiat Error ', e)
       }
     } else {
@@ -312,11 +315,13 @@ class BuyScene extends Component<Props, State> {
         this.setState({
           cryptoLoading: false,
           quote: result.quote,
-          rate: Math.round(result.rate.rate * 100) / 100
+          rate: Math.round(result.rate.rate * 100) / 100,
+          error: undefined
         }, () => {
           setCryptoInput(result.quote.digital_amount)
         })
       } catch (e) {
+        this.setState({error: e.message})
         console.log(e)
       }
     } else {
@@ -549,11 +554,11 @@ class BuyScene extends Component<Props, State> {
     }
     return (
       <div>
-        {this.renderError(errors)}
         {this.renderConfirmDialog()}
         {this.renderFiatSupportWarning()}
-        {this.renderConversionCard()}
         {this.renderDestinationDetails()}
+        {this.renderConversionCard()}
+        {this.renderError(errors)}
         {this.renderAmountSelector(errors)}
         {this.renderButtonCard(errors)}
         {this.renderForm()}
