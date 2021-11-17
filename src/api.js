@@ -140,7 +140,7 @@ export const SUPPORTED_SELL_FIAT_CURRENCIES = ['EUR']
 
 export const SUPPORTED_SELL_DIGITAL_CURRENCIES = ['BTC']
 
-export const RETURN_URL = `${edgeUrl}/redirect/`
+export const RETURN_URL = 'edge://plugin/simplex'
 
 export function sessionId () {
   return uuidv1()
