@@ -160,7 +160,7 @@ class BuyScene extends Component<Props, State> {
     const { wallet, fiat } = this.state
     if (!wallet) return
     try {
-      const c = wallet.currencyCode
+      const c = API.getSimplexId(wallet.pluginId, wallet.currencyCode)
       // Use minimum fiat amount in order to return a quote from Simplex for initial conversion rate. Double it to avoid issues with outdated hardcoded limits.
       const result = await API.requestQuote(fiat, API.LIMITS[fiat].min * 2, c, fiat)
       const parsed = await result.json()
@@ -207,32 +207,31 @@ class BuyScene extends Component<Props, State> {
   getWalletDetails = () => {
     window.edgeProvider.getCurrentWalletInfo()
       .then(result => {
-        if (API.SUPPORTED_DIGITAL_CURRENCIES.includes(result.currencyCode)) {
-          /* Check if this wallets fiat currency is supported */
-          const fiatSupport = API.SUPPORTED_FIAT_CURRENCIES.indexOf(result.fiatCurrencyCode) !== -1
-          /* If we don't support this wallet's currency switch to the default */
-          const fiat = fiatSupport ? result.fiatCurrencyCode : this.state.defaultFiat
-          this.setState({
-            wallet: result,
-            fiatSupport,
-            fiat
-          }, () => {
-            this.loadConversion()
-          })
-        }
+        /* Check if this wallets fiat currency is supported */
+        const fiatSupport = API.SUPPORTED_FIAT_CURRENCIES.indexOf(result.fiatCurrencyCode) !== -1
+        /* If we don't support this wallet's currency switch to the default */
+        const fiat = fiatSupport ? result.fiatCurrencyCode : this.state.defaultFiat
+        this.setState({
+          wallet: result,
+          fiatSupport,
+          fiat
+        }, () => {
+          this.loadConversion()
+        })
       })
   }
   openWallets = () => {
-    window.edgeProvider.chooseCurrencyWallet(API.SUPPORTED_DIGITAL_CURRENCIES)
+    window.edgeProvider.chooseCurrencyWallet(API.SUPPORTED_TOKENIDS)
       .then(result => {
+        const simplexId = API.getSimplexId(result.pluginId, result.currencyCode)
         this.setState(
           {
-            currentWalletCurrencyCode: result,
+            currentWalletCurrencyCode: simplexId,
             rate: null,
             quote: null
           },
           () => {
-            window.localStorage.setItem('last_selected_currency', result)
+            window.localStorage.setItem('last_selected_currency', simplexId)
             setFiatInput('')
             setCryptoInput('')
             this.getWalletDetails()
@@ -265,7 +264,7 @@ class BuyScene extends Component<Props, State> {
       })
       if (!this.state.wallet) return
       const v = event.target.value
-      const c = this.state.wallet.currencyCode
+      const c = API.getSimplexId(this.state.wallet.pluginId, this.state.wallet.currencyCode)
       try {
         const quote = await API.requestQuote(c, v, c, this.state.fiat)
         const parseQuote = await quote.json()
@@ -307,7 +306,7 @@ class BuyScene extends Component<Props, State> {
       })
       if (!this.state.wallet) return
       const v = event.target.value
-      const c = this.state.wallet.currencyCode
+      const c = API.getSimplexId(this.state.wallet.pluginId, this.state.wallet.currencyCode)
       try {
         const quote = await API.requestQuote(this.state.fiat, v, c, this.state.fiat)
         const parseQuote = await quote.json()
