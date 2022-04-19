@@ -35,6 +35,7 @@ const setDomValue = (id, value) => {
 
 const buildObject = async (res, wallet) => {
   if (!res.quote_id) {
+    window.edgeProvider.consoleLog(res.error)
     throw new Error(res.error)
   }
   let address = null
@@ -165,7 +166,7 @@ class BuyScene extends Component<Props, State> {
       const result = await API.requestQuote(fiat, API.LIMITS[fiat].min * 2, c, fiat)
       const parsed = await result.json()
       const quoteRate = await buildObject(parsed.res, wallet)
-      this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100 })
+      this.setState({ rate: Math.round(quoteRate.rate.rate * 100) / 100, error: undefined })
     } catch (e) {
       this.setState({
         error: 'Unable to retrieve rates. Please try again later.'
