@@ -279,7 +279,11 @@ class BuyScene extends Component<Props, State> {
           setFiatInput(result.quote.fiat_amount)
         })
       } catch (e) {
-        this.setState({error: e.message})
+        if (e.message != null && e.message.includes('amount must be between')) {
+          this.setState({error: 'The USD purchase amount must be between $50 and $20,000'})
+        } else {
+          this.setState({error: e.message})
+        }
         console.log('calcFiat Error ', e)
       }
     } else {
